@@ -1,11 +1,30 @@
-import twilio from "twilio";
+require('dotenv').config();
 
-const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH);
+let client = null;
 
-export const sendSmsOtp = (phone, otp) => {
+// Only create Twilio client if SID starts with AC
+if (
+  process.env.TWILIO_ACCOUNT_SID &&
+  process.env.TWILIO_ACCOUNT_SID.startsWith("AC")
+) {
+  const twilio = require('twilio');
+  client = twilio(
+    process.env.TWILIO_ACCOUNT_SID,
+    process.env.TWILIO_AUTH_TOKEN
+  );
+}
+
+async function sendSms(to, body) {
+  if (!client) {
+    console.log("SMS disabled. No valid Twilio credentials.");
+    return null;
+  }
+
   return client.messages.create({
-    from: process.env.TWILIO_NUMBER,
-    to: phone,
-    body: `Your OTP is: ${otp}`
+    body,
+    from: process.env.TWILIO_FROM,
+    to,
   });
-};
+}
+
+module.exports = { sendSms };
