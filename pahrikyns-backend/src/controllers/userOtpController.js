@@ -1,13 +1,22 @@
 const prisma = require("../config/prismaClient");
-const jwt = require("jsonwebtoken");
 const { sendOTPEmail } = require("../helpers/generateOTP");
+const bcrypt = require("bcryptjs");
 
+
+// ===================================================
+// SEND USER OTP  (Already sent in registerUser also)
+// ===================================================
 exports.sendUserOTP = async (req, res) => {
   try {
     const { email } = req.body;
 
+    if (!email)
+      return res.status(400).json({ error: "Email required" });
+
+    // Clear old OTP
     await prisma.otpStore.deleteMany({ where: { email } });
 
+    // Send new OTP
     const otp = await sendOTPEmail(email);
 
     await prisma.otpStore.create({
@@ -15,64 +24,96 @@ exports.sendUserOTP = async (req, res) => {
         email,
         otp,
         method: "email",
-        expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+        expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 mins
       },
     });
 
-    res.json({ message: "OTP sent" });
+    res.json({ message: "OTP sent successfully" });
 
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    console.log(err);
+    res.status(500).json({ error: "Failed to send OTP" });
   }
 };
 
 
+
+// ===================================================
+// VERIFY USER OTP
+// ===================================================
 exports.verifyUserOTP = async (req, res) => {
   try {
     const { email, otp } = req.body;
 
-    const record = await prisma.otpStore.findFirst({
-      where: { email, otp },
+    if (!email || !otp)
+      return res.status(400).json({ error: "Missing OTP data" });
+
+    // Find OTP
+    const otpRecord = await prisma.otpStore.findFirst({
+      where: { email },
     });
 
-    if (!record) return res.status(400).json({ error: "Invalid OTP" });
+    if (!otpRecord)
+      return res.status(400).json({ error: "OTP not found" });
 
-    if (record.expiresAt < new Date())
+    if (otpRecord.otp !== otp)
+      return res.status(400).json({ error: "Invalid OTP" });
+
+    if (otpRecord.expiresAt < new Date())
       return res.status(400).json({ error: "OTP expired" });
 
-    // Create user from tempUser
-    const temp = await prisma.tempUser.findUnique({ where: { email } });
+    // Get TEMP user
+    const tempUser = await prisma.tempUser.findUnique({
+      where: { email },
+    });
 
-    if (!temp) return res.status(400).json({ error: "Temp user missing" });
+    if (!tempUser)
+      return res.status(400).json({ error: "User not found in TempUser" });
 
+    // Move TempUser -> User table
     const user = await prisma.user.create({
       data: {
-        name: temp.name,
-        email,
-        password: temp.password,
-        isVerified: true
+        name: tempUser.name,
+        email: tempUser.email,
+        password: tempUser.password,
+        isVerified: true,
       },
     });
 
+    // Cleanup
     await prisma.tempUser.delete({ where: { email } });
     await prisma.otpStore.deleteMany({ where: { email } });
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+    // CREATE SESSION
+    req.session.userId = user.id;
 
-    res.json({ message: "Verified", token, user });
+    res.json({
+      message: "OTP verified successfully",
+      user,
+    });
 
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    console.log(err);
+    res.status(500).json({ error: "OTP Verification failed" });
   }
 };
 
 
+
+// ===================================================
+// RESEND OTP
+// ===================================================
 exports.resendUserOTP = async (req, res) => {
   try {
     const { email } = req.body;
 
+    if (!email)
+      return res.status(400).json({ error: "Email required" });
+
+    // Delete previous OTP
     await prisma.otpStore.deleteMany({ where: { email } });
 
+    // Send new OTP
     const otp = await sendOTPEmail(email);
 
     await prisma.otpStore.create({
@@ -84,9 +125,10 @@ exports.resendUserOTP = async (req, res) => {
       },
     });
 
-    res.json({ message: "OTP resent" });
+    res.json({ message: "OTP resent!" });
 
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    console.log(err);
+    res.status(500).json({ error: "Failed to resend OTP" });
   }
 };

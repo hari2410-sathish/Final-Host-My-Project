@@ -21,13 +21,13 @@ import ToolPage from "./pages/Courses/ToolPage";
 import LessonViewer from "./pages/Courses/LessonViewer";
 
 /* ============================
-   AUTH (USER)
+   USER AUTH
 ============================ */
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
 
 /* ============================
-   AUTH (ADMIN)
+   ADMIN AUTH
 ============================ */
 import AdminLogin from "./pages/Auth/AdminLogin";
 import AdminForgotPassword from "./pages/Auth/AdminForgotPassword";
@@ -58,6 +58,21 @@ import CertificatesPro from "./pages/Admin/CertificatesPro";
 import VerifyCertificate from "./pages/Public/VerifyCertificate";
 
 /* ============================
+   RESUME BUILDER (TEMPLATES)
+============================ */
+import ResumeSimple from "./pages/Admin/Resume/ResumeSimple";
+import ResumeMedium from "./pages/Admin/Resume/ResumeMedium";
+import ResumePro from "./pages/Admin/Resume/ResumePro";
+import ResumeMaster from "./pages/Admin/Resume/ResumeMaster";
+import ResumeUltraPro from "./pages/Admin/Resume/ResumeUltraPro";
+
+/* ============================
+   RESUME BUILDER MAIN PAGES
+============================ */
+import ResumeHome from "./pages/Admin/Resume/ResumeHome";
+import ResumeBuilder from "./pages/Admin/Resume/ResumeBuilder";
+
+/* ============================
    CONTEXT
 ============================ */
 import { AdminAuthProvider } from "./contexts/AdminAuthContext";
@@ -74,28 +89,21 @@ export default function App() {
     <AdminAuthProvider>
       <Routes>
 
-        {/* ============================
+        {/* ====================================
             USER PUBLIC AREA
-        ============================= */}
+        ===================================== */}
         <Route element={<UserLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/courses/:category" element={<CategoryPage />} />
           <Route path="/courses/:category/:tool" element={<ToolPage />} />
-          <Route
-            path="/courses/:category/:tool/:lessonId"
-            element={<LessonViewer />}
-          />
+          <Route path="/courses/:category/:tool/:lessonId" element={<LessonViewer />} />
         </Route>
 
-        {/* ============================
-            USER AUTH
-        ============================= */}
+        {/* USER AUTH */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* ============================
-            USER DASHBOARD (PROTECTED)
-        ============================= */}
+        {/* USER DASHBOARD */}
         <Route
           path="/dashboard"
           element={
@@ -105,23 +113,21 @@ export default function App() {
           }
         />
 
-        {/* ============================
-            ADMIN AUTH
-        ============================= */}
+        {/* ====================================
+            ADMIN AUTH PUBLIC ROUTES
+        ===================================== */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/forgot" element={<AdminForgotPassword />} />
         <Route path="/admin/reset/:token" element={<AdminResetPassword />} />
         <Route path="/admin/verify-otp" element={<AdminOTPVerify />} />
         <Route path="/admin/setup-totp" element={<AdminTOTPSetup />} />
 
-        {/* ============================
-            PUBLIC CERTIFICATE VERIFY
-        ============================= */}
+        {/* PUBLIC CERTIFICATE VERIFY */}
         <Route path="/verify/:certId" element={<VerifyCertificate />} />
 
-        {/* ============================
-            ADMIN AREA (PROTECTED)
-        ============================= */}
+        {/* ====================================
+            ADMIN PROTECTED AREA
+        ===================================== */}
         <Route
           path="/admin"
           element={
@@ -137,67 +143,32 @@ export default function App() {
           <Route path="courses/add" element={<AddCourse />} />
           <Route path="courses/edit/:courseId" element={<EditCourse />} />
           <Route path="courses/:courseId" element={<CourseDetails />} />
-
-          <Route
-            path="courses/categories"
-            element={<ComingSoon title="Course Categories" />}
-          />
-          <Route
-            path="courses/lessons"
-            element={<ComingSoon title="Course Lessons" />}
-          />
-          <Route
-            path="courses/pricing"
-            element={<ComingSoon title="Course Pricing" />}
-          />
+          <Route path="courses/categories" element={<ComingSoon title="Course Categories" />} />
+          <Route path="courses/lessons" element={<ComingSoon title="Course Lessons" />} />
+          <Route path="courses/pricing" element={<ComingSoon title="Course Pricing" />} />
 
           {/* STUDENTS */}
           <Route path="students" element={<ManageStudents />} />
           <Route path="students/:studentId" element={<StudentDetails />} />
-
-          <Route
-            path="students/active"
-            element={<ComingSoon title="Active Students" />}
-          />
-          <Route
-            path="students/suspended"
-            element={<ComingSoon title="Suspended Students" />}
-          />
+          <Route path="students/active" element={<ComingSoon title="Active Students" />} />
+          <Route path="students/suspended" element={<ComingSoon title="Suspended Students" />} />
           <Route path="students/payments" element={<StudentPayments />} />
-          <Route
-            path="students/progress"
-            element={<ComingSoon title="Student Progress" />}
-          />
-          <Route
-            path="students/certificates"
-            element={<CertificatesPro />}
-          />
-          <Route
-            path="students/graduated"
-            element={<ComingSoon title="Graduated Students" />}
-          />
+          <Route path="students/progress" element={<ComingSoon title="Student Progress" />} />
+          <Route path="students/certificates" element={<CertificatesPro />} />
+          <Route path="students/graduated" element={<ComingSoon title="Graduated Students" />} />
+
+          {/* =============================
+              RESUME BUILDER
+          ============================= */}
+          <Route path="resume" element={<ResumeHome />} />
+          <Route path="resume/builder/:templateId" element={<ResumeBuilder />} />
 
           {/* ANALYTICS */}
-          <Route
-            path="analytics/overview"
-            element={<ComingSoon title="Analytics Overview" />}
-          />
-          <Route
-            path="analytics/revenue"
-            element={<ComingSoon title="Revenue Analytics" />}
-          />
-          <Route
-            path="analytics/activity"
-            element={<ComingSoon title="User Activity Analytics" />}
-          />
-          <Route
-            path="analytics/courses"
-            element={<ComingSoon title="Course Analytics" />}
-          />
-          <Route
-            path="analytics/logs"
-            element={<ComingSoon title="System Logs" />}
-          />
+          <Route path="analytics/overview" element={<ComingSoon title="Analytics Overview" />} />
+          <Route path="analytics/revenue" element={<ComingSoon title="Revenue Analytics" />} />
+          <Route path="analytics/activity" element={<ComingSoon title="User Activity Analytics" />} />
+          <Route path="analytics/courses" element={<ComingSoon title="Course Analytics" />} />
+          <Route path="analytics/logs" element={<ComingSoon title="System Logs" />} />
 
           {/* SETTINGS */}
           <Route path="settings" element={<AdminSettings />} />

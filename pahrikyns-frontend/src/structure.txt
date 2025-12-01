@@ -18,8 +18,21 @@ D:.
 ³       otp.js
 ³       
 ÃÄÄÄassets
-³       react.svg
-³       
+³   ³   react.svg
+³   ³   
+³   ÃÄÄÄcert
+³   ³       logo.png
+³   ³       seal.png
+³   ³       signature.png
+³   ³       
+³   ÀÄÄÄgit
+³           git-architecture.png
+³           git-distributed.png
+³           git-file-states.png
+³           git-flow.png
+³           git-what-is.png
+³           git-why-use.png
+³           
 ÃÄÄÄcomponents
 ³   ÃÄÄÄadmin
 ³   ³       AddCourseModal.jsx
@@ -27,6 +40,7 @@ D:.
 ³   ³       AdminSidebar.jsx
 ³   ³       AdminTopbar.jsx
 ³   ³       BarChart.jsx
+³   ³       CertificatePreview.jsx
 ³   ³       CourseCard.jsx
 ³   ³       CourseTable.jsx
 ³   ³       CSVImportModal.jsx
@@ -36,6 +50,9 @@ D:.
 ³   ³       StatCard.jsx
 ³   ³       StudentCard.jsx
 ³   ³       StudentTable.jsx
+³   ³       
+³   ÃÄÄÄcertificates
+³   ³       CertificateViewer.jsx
 ³   ³       
 ³   ÃÄÄÄcommon
 ³   ³       Loader.jsx
@@ -49,18 +66,23 @@ D:.
 ³   ³       
 ³   ÃÄÄÄdashboard
 ³   ³       CourseProgressList.jsx
-³   ³       DashboardSidebar.jsx
-³   ³       DashboardTopBar.jsx
+³   ³       LearningChart.jsx
+³   ³       LeftSidebar.jsx
 ³   ³       ResumeBuild.jsx
+³   ³       TopBar.jsx
+³   ³       UserDetails.jsx
 ³   ³       
-³   ÀÄÄÄglobal
-³           Footer.jsx
-³           MainNavbar.jsx
-³           NotificationPanel.jsx
-³           ProgressBar.jsx
-³           SearchBar.jsx
-³           Sidebar.jsx
-³           ThemeToggle.jsx
+³   ÃÄÄÄglobal
+³   ³       Footer.jsx
+³   ³       MainNavbar.jsx
+³   ³       NotificationPanel.jsx
+³   ³       ProgressBar.jsx
+³   ³       SearchBar.jsx
+³   ³       Sidebar.jsx
+³   ³       ThemeToggle.jsx
+³   ³       
+³   ÀÄÄÄresume
+³           TemplatePreview.jsx
 ³           
 ÃÄÄÄcontexts
 ³       AdminAuthContext.jsx
@@ -83,6 +105,7 @@ D:.
 ³   ³       AddLesson.jsx
 ³   ³       AdminDashboard.jsx
 ³   ³       AdminSettings.jsx
+³   ³       CertificatesPro.jsx
 ³   ³       CourseDetails.jsx
 ³   ³       Dashboard.jsx
 ³   ³       EditCourse.jsx
@@ -91,6 +114,7 @@ D:.
 ³   ³       Notification.jsx
 ³   ³       SearchBox.jsx
 ³   ³       StudentDetails.jsx
+³   ³       StudentPayments.jsx
 ³   ³       
 ³   ÃÄÄÄAuth
 ³   ³       AdminForgotPassword.jsx
@@ -103,6 +127,8 @@ D:.
 ³   ³       LoginForgetPassword.jsx
 ³   ³       Register.jsx
 ³   ³       ResetPassword.jsx
+³   ³       ResetVerify.jsx
+³   ³       userloginOTPVerify.jsx
 ³   ³       
 ³   ÃÄÄÄCourses
 ³   ³   ³   CategoryPage.jsx
@@ -769,29 +795,44 @@ D:.
 ³   ³               lesson9.jsx
 ³   ³               
 ³   ÃÄÄÄDashboard
-³   ³       LeftSidebar.jsx
-³   ³       LoginDetails.jsx
-³   ³       RightSidebar.jsx
-³   ³       TopBar.jsx
 ³   ³       UserDashboard.jsx
-³   ³       UserDetails.jsx
 ³   ³       
-³   ÀÄÄÄHome
-³           Home.css
-³           HomePage.jsx
+³   ÃÄÄÄHome
+³   ³       Home.css
+³   ³       HomePage.jsx
+³   ³       
+³   ÃÄÄÄPublic
+³   ³       VerifyCertificate.jsx
+³   ³       
+³   ÀÄÄÄUser
+³           ChangePassword.jsx
+³           MyCourses.jsx
+³           ProgressDashboard.jsx
+³           ResumeBuilder.jsx
+³           UserProfile.jsx
 ³           
 ÃÄÄÄroutes
 ³       AppRoutes.jsx
 ³       
 ÀÄÄÄutils
-        adminAuth.js
-        AdminProtectedRoute.jsx
-        auth.js
-        courseLoader.js
-        courseModel.js
-        deviceHelper.js
-        deviceStore.js
-        helpers.js
-        notifications.js
-        ProtectedRoute.jsx
-        
+    ³   adminAuth.js
+    ³   AdminProtectedRoute.jsx
+    ³   auth.js
+    ³   courseLoader.js
+    ³   courseModel.js
+    ³   deviceHelper.js
+    ³   deviceStore.js
+    ³   generateInvoicePDF.js
+    ³   helpers.js
+    ³   notifications.js
+    ³   ProtectedRoute.jsx
+    ³   UserProtectedRoute.jsx
+    ³   
+    ÀÄÄÄcertificates
+            bulkCertificates.js
+            darkTemplate.js
+            generateCertificatePDF.js
+            goldTemplate.js
+            minimalTemplate.js
+            modernTemplate.js
+            

@@ -6,39 +6,45 @@ import { Box } from "@mui/material";
 import AdminSidebar from "../components/admin/AdminSidebar";
 import { AdminTopbar } from "../components/admin/AdminTopbar";
 
-
 export default function AdminLayout() {
   return (
     <Box
       sx={{
         minHeight: "100vh",
         width: "100vw",
+        display: "flex",
         overflow: "hidden",
         bgcolor: "#020617",
         color: "white",
-        display: "flex",
       }}
     >
-
-      {/* SIDEBAR — DO NOT WRAP INSIDE FIXED WIDTH BOX */}
+      {/* LEFT SIDEBAR */}
       <AdminSidebar />
 
-      {/* RIGHT MAIN CONTENT AREA */}
+      {/* RIGHT SECTION */}
       <Box
         sx={{
           flex: 1,
           display: "flex",
           flexDirection: "column",
-          overflowX: "hidden",
+          overflow: "hidden",
         }}
       >
+        {/* TOP BAR */}
         <AdminTopbar />
 
-        <Box sx={{ p: 3 }}>
+        {/* MAIN CONTENT */}
+        <Box
+          sx={{
+            flex: 1,
+            overflowY: "auto",
+            overflowX: "hidden",
+            p: 3,
+          }}
+        >
           <Outlet />
         </Box>
       </Box>
-
     </Box>
   );
 }

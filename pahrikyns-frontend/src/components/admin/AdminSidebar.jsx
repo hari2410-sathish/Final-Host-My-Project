@@ -7,41 +7,29 @@ import {
   ListItemIcon,
   ListItemText,
   IconButton,
-  Tooltip,
   Typography,
   Divider,
   Avatar,
-  useTheme,
   Collapse,
   Switch,
 } from "@mui/material";
+
 import MenuIcon from "@mui/icons-material/Menu";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import BookIcon from "@mui/icons-material/Book";
 import PeopleIcon from "@mui/icons-material/People";
 import SettingsIcon from "@mui/icons-material/Settings";
-import AddBoxIcon from "@mui/icons-material/AddBox";
 import LogoutIcon from "@mui/icons-material/Logout";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import PaymentIcon from "@mui/icons-material/Payment";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 
-// Motion
 import { motion, AnimatePresence } from "framer-motion";
 
-/**
- * PRO Neon Admin Sidebar
- * - Hover expand
- * - Multi-level menu
- * - Bottom panel
- * - Motion animations (framer-motion)
- *
- * Paste to: src/components/admin/AdminSidebar.jsx
- * Make sure: `framer-motion` is installed (`npm i framer-motion`)
- */
-
+// ----------------------------------------------------------------------
+// MENU STRUCTURE — FINAL & CORRECT VERSION
+// ----------------------------------------------------------------------
 const menuStructure = [
   {
     id: "dashboard",
@@ -49,6 +37,7 @@ const menuStructure = [
     path: "/admin/dashboard",
     icon: <DashboardIcon />,
   },
+
   {
     id: "courses",
     title: "Courses",
@@ -62,6 +51,25 @@ const menuStructure = [
       { title: "Course Pricing", path: "/admin/courses/pricing" },
     ],
   },
+
+  // ⭐ FINAL FIXED RESUME MENU ⭐
+  {
+    id: "resume",
+    title: "Resume",
+    path: "/admin/resume",
+    icon: <PeopleIcon />,
+    children: [
+      { title: "Resume Home", path: "/admin/resume" },
+
+      // Builder routes
+      { title: "Builder - Simple", path: "/admin/resume/builder/simple" },
+      { title: "Builder - Medium", path: "/admin/resume/builder/medium" },
+      { title: "Builder - Pro", path: "/admin/resume/builder/pro" },
+      { title: "Builder - Master", path: "/admin/resume/builder/master" },
+      { title: "Builder - Ultra", path: "/admin/resume/builder/ultra" },
+    ],
+  },
+
   {
     id: "students",
     title: "Students",
@@ -77,6 +85,7 @@ const menuStructure = [
       { title: "Graduated", path: "/admin/students/graduated" },
     ],
   },
+
   {
     id: "analytics",
     title: "Analytics",
@@ -90,6 +99,7 @@ const menuStructure = [
       { title: "System Logs", path: "/admin/analytics/logs" },
     ],
   },
+
   {
     id: "settings",
     title: "Settings",
@@ -108,36 +118,44 @@ const itemVariants = {
   visible: { opacity: 1, x: 0 },
 };
 
+// ----------------------------------------------------------------------
+// MAIN COMPONENT
+// ----------------------------------------------------------------------
 export default function AdminSidebar({ onLogout = () => {}, admin = null }) {
-  const theme = useTheme();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(true);
   const hoverTimer = useRef(null);
   const [openMenus, setOpenMenus] = useState({});
-  const [isProResume, setIsProResume] = useState("simple");
+  const [themeMode, setThemeMode] = useState("simple");
 
   useEffect(() => {
-    // open parent menu if current route is inside it
     const m = {};
     menuStructure.forEach((ms) => {
-      if (ms.children && location.pathname.startsWith(ms.path)) m[ms.id] = true;
+      if (ms.children && location.pathname.startsWith(ms.path)) {
+        m[ms.id] = true;
+      }
     });
     setOpenMenus((s) => ({ ...s, ...m }));
   }, [location.pathname]);
 
-  const toggleMenu = (id) => setOpenMenus((s) => ({ ...s, [id]: !s[id] }));
+  const toggleMenu = (id) =>
+    setOpenMenus((s) => ({ ...s, [id]: !s[id] }));
 
-  const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + "/");
+  const isActive = (path) =>
+    location.pathname === path || location.pathname.startsWith(path + "/");
 
   const handleMouseEnter = () => {
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
     setCollapsed(false);
   };
+
   const handleMouseLeave = () => {
-    // small delay to avoid jitter
     hoverTimer.current = setTimeout(() => setCollapsed(true), 260);
   };
 
+  // ----------------------------------------------------------------------
+  // RENDER
+  // ----------------------------------------------------------------------
   return (
     <motion.nav
       initial={false}
@@ -154,9 +172,12 @@ export default function AdminSidebar({ onLogout = () => {}, admin = null }) {
       }}
     >
       <Box sx={{ height: "100%", display: "flex", flexDirection: "column", p: 1.25 }}>
-        {/* Header */}
+
+        {/* HEADER */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 1 }}>
-          <Avatar sx={{ bgcolor: "primary.main", width: 44, height: 44 }}>{admin?.email?.[0]?.toUpperCase() || "A"}</Avatar>
+          <Avatar sx={{ bgcolor: "primary.main", width: 44, height: 44 }}>
+            {admin?.email?.[0]?.toUpperCase() || "A"}
+          </Avatar>
 
           <Box sx={{ flex: 1, overflow: "hidden" }}>
             <AnimatePresence>
@@ -180,7 +201,10 @@ export default function AdminSidebar({ onLogout = () => {}, admin = null }) {
           <IconButton
             size="small"
             onClick={() => setCollapsed((s) => !s)}
-            sx={{ color: "rgba(255,255,255,0.85)", border: "1px solid rgba(255,255,255,0.04)", bgcolor: "rgba(255,255,255,0.02)" }}
+            sx={{
+              color: "rgba(255,255,255,0.85)",
+              border: "1px solid rgba(255,255,255,0.04)",
+            }}
           >
             <MenuIcon />
           </IconButton>
@@ -188,10 +212,11 @@ export default function AdminSidebar({ onLogout = () => {}, admin = null }) {
 
         <Divider sx={{ borderColor: "rgba(255,255,255,0.03)", my: 1 }} />
 
-        {/* Menu List */}
+        {/* MENU LIST */}
         <List sx={{ p: 0 }}>
           {menuStructure.map((m) => {
             const active = isActive(m.path);
+
             return (
               <Box key={m.id} sx={{ position: "relative" }}>
                 <motion.div initial="hidden" animate="visible" variants={itemVariants}>
@@ -204,20 +229,30 @@ export default function AdminSidebar({ onLogout = () => {}, admin = null }) {
                       borderRadius: 1.5,
                       px: 1.25,
                       py: 1.25,
-                      textDecoration: "none",
                       color: active ? "primary.main" : "rgba(255,255,255,0.92)",
-                      background: active ? "linear-gradient(180deg, rgba(0,30,40,0.24), rgba(0,10,12,0.08))" : "transparent",
-                      transition: "all 160ms ease",
-                      display: "flex",
-                      alignItems: "center",
+                      background: active
+                        ? "linear-gradient(180deg, rgba(0,30,40,0.24), rgba(0,10,12,0.08))"
+                        : "transparent",
                     }}
                   >
-                    <ListItemIcon sx={{ minWidth: 36, color: active ? "primary.main" : "rgba(255,255,255,0.85)" }}>{m.icon}</ListItemIcon>
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 36,
+                        color: active ? "primary.main" : "rgba(255,255,255,0.85)",
+                      }}
+                    >
+                      {m.icon}
+                    </ListItemIcon>
 
                     <AnimatePresence>
                       {!collapsed && (
                         <motion.div
-                          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            width: "100%",
+                          }}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -10 }}
@@ -226,25 +261,33 @@ export default function AdminSidebar({ onLogout = () => {}, admin = null }) {
                             primary={m.title}
                             primaryTypographyProps={{ fontWeight: active ? 800 : 700 }}
                           />
-
                           {m.children && (openMenus[m.id] ? <ExpandLess /> : <ExpandMore />)}
                         </motion.div>
                       )}
                     </AnimatePresence>
 
-                    {/* small active dot when collapsed */}
                     {active && collapsed && (
-                      <Box sx={{ position: "absolute", right: 8, width: 8, height: 8, borderRadius: "50%", bgcolor: "primary.main", boxShadow: "0 6px 18px rgba(0,200,255,0.18)" }} />
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          right: 8,
+                          width: 8,
+                          height: 8,
+                          borderRadius: "50%",
+                          bgcolor: "primary.main",
+                        }}
+                      />
                     )}
                   </ListItemButton>
                 </motion.div>
 
-                {/* children */}
+                {/* CHILD LINKS */}
                 {m.children && (
                   <Collapse in={!!openMenus[m.id]} timeout="auto" unmountOnExit>
                     <List sx={{ pl: collapsed ? 2.5 : 4, py: 0 }}>
                       {m.children.map((c) => {
                         const cActive = isActive(c.path);
+
                         return (
                           <ListItemButton
                             key={c.path}
@@ -261,7 +304,13 @@ export default function AdminSidebar({ onLogout = () => {}, admin = null }) {
                             <ListItemIcon sx={{ minWidth: 32 }}>
                               <LocalOfferIcon sx={{ fontSize: 16 }} />
                             </ListItemIcon>
-                            {!collapsed && <ListItemText primary={c.title} primaryTypographyProps={{ fontSize: 13 }} />}
+
+                            {!collapsed && (
+                              <ListItemText
+                                primary={c.title}
+                                primaryTypographyProps={{ fontSize: 13 }}
+                              />
+                            )}
                           </ListItemButton>
                         );
                       })}
@@ -274,10 +323,9 @@ export default function AdminSidebar({ onLogout = () => {}, admin = null }) {
         </List>
 
         <Box sx={{ flex: 1 }} />
-
         <Divider sx={{ borderColor: "rgba(255,255,255,0.03)" }} />
 
-        {/* Bottom Panel */}
+        {/* BOTTOM SECTION */}
         <Box sx={{ p: 1.25, display: "flex", flexDirection: "column", gap: 1.25 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {!collapsed && (
@@ -291,34 +339,36 @@ export default function AdminSidebar({ onLogout = () => {}, admin = null }) {
               </Box>
             )}
 
-            <Switch checked={isProResume === "pro"} onChange={(e) => setIsProResume(e.target.checked ? "pro" : "simple")} />
+            <Switch
+              checked={themeMode === "pro"}
+              onChange={(e) => setThemeMode(e.target.checked ? "pro" : "simple")}
+            />
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             {!collapsed && (
               <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>
-                v1.2.3 — {isProResume}
+                v1.2.3 — {themeMode}
               </Typography>
             )}
 
-            <Box sx={{ display: "flex", gap: 1 }}>
-              <IconButton size="small" onClick={() => window.open("/support", "_blank")}>?</IconButton>
-              <ListItemButton
-                onClick={() => {
-                  try {
-                    onLogout();
-                  } catch (e) {
-                    console.error(e);
-                  }
-                }}
-                sx={{ px: 1, py: 0.6, borderRadius: 1 }}
-              >
-                <ListItemIcon sx={{ minWidth: 32 }}>
-                  <LogoutIcon />
-                </ListItemIcon>
-                {!collapsed && <ListItemText primary="Logout" primaryTypographyProps={{ fontWeight: 800 }} />}
-              </ListItemButton>
-            </Box>
+            <ListItemButton
+              onClick={() => {
+                try {
+                  onLogout();
+                } catch (e) {
+                  console.error(e);
+                }
+              }}
+              sx={{ px: 1, py: 0.6, borderRadius: 1 }}
+            >
+              <ListItemIcon sx={{ minWidth: 32 }}>
+                <LogoutIcon />
+              </ListItemIcon>
+              {!collapsed && (
+                <ListItemText primary="Logout" primaryTypographyProps={{ fontWeight: 800 }} />
+              )}
+            </ListItemButton>
           </Box>
         </Box>
       </Box>

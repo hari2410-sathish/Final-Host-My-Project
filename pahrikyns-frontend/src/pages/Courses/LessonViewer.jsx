@@ -1,6 +1,5 @@
-// src/pages/Courses/LessonViewer.jsx
 import React, { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { loadAllLessons } from "./index";
 import LessonSidebar from "../../components/Course/LessonSidebar";
 
@@ -11,7 +10,7 @@ export default function LessonViewer() {
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
 
-  // Read progress from localStorage
+  // Read progress
   const readProgress = (num) => {
     try {
       const v = localStorage.getItem(
@@ -23,7 +22,7 @@ export default function LessonViewer() {
     }
   };
 
-  // Save progress for this lesson
+  // Write progress
   const writeProgress = (num, val) => {
     try {
       localStorage.setItem(
@@ -33,6 +32,7 @@ export default function LessonViewer() {
     } catch {}
   };
 
+  // Initialize lesson data
   useEffect(() => {
     async function init() {
       const list = await loadAllLessons(category, tool);
@@ -43,20 +43,20 @@ export default function LessonViewer() {
 
       if (found) {
         setLesson(found);
-        setProgress(readProgress(found.num)); // Load existing progress
+        setProgress(readProgress(found.num));
       }
     }
     init();
   }, [category, tool, lessonId]);
 
-  if (!lesson) return <div>Loading lesson...</div>;
+  if (!lesson) return <div style={{ padding: 20, color: "white" }}>Loading lesson...</div>;
 
   const Component = lesson.Component;
 
   const prev = lessons.find((l) => l.num === lesson.num - 1);
   const next = lessons.find((l) => l.num === lesson.num + 1);
 
-  // 🟦 Update progress as user scrolls
+  // Scroll progress
   const handleScroll = (e) => {
     const el = e.target;
     const percent = Math.min(
@@ -88,12 +88,12 @@ export default function LessonViewer() {
         }}
         onScroll={handleScroll}
       >
-        {/* TOP PROGRESS BAR */}
+        {/* Progress bar */}
         <div
           style={{
             position: "fixed",
             top: 0,
-            left: 280,
+            left: 250, // clean fixed position for sidebar width
             right: 0,
             height: 6,
             background: "rgba(255,255,255,0.08)",
@@ -110,7 +110,7 @@ export default function LessonViewer() {
           ></div>
         </div>
 
-        {/* Lesson Header */}
+        {/* Header */}
         <h1 style={{ color: "#00eaff", marginBottom: 6 }}>
           {lesson.meta.title}
         </h1>
@@ -119,16 +119,16 @@ export default function LessonViewer() {
           {lesson.meta.description}
         </div>
 
-        {/* Meta Row */}
+        {/* Meta row */}
         <div style={{ display: "flex", gap: 14, marginBottom: 20 }}>
           <span>📘 <b>{lesson.meta.difficulty}</b></span>
           <span>⏱ {lesson.meta.duration}</span>
           {lesson.meta.updated && <span>🗓 {lesson.meta.updated}</span>}
         </div>
 
-        {/* Tag Row */}
+        {/* Tags safe map */}
         <div style={{ display: "flex", gap: 8, marginBottom: 25 }}>
-          {lesson.meta.tags.map((t) => (
+          {(lesson.meta.tags || []).map((t) => (
             <span
               key={t}
               style={{
@@ -145,11 +145,18 @@ export default function LessonViewer() {
         </div>
 
         {/* LESSON CONTENT */}
-        <div style={{ marginBottom: 40 }}>
-          <Component />
-        </div>
+        <div
+  style={{
+    marginBottom: 40,
+    color: "hsla(120, 3%, 7%, 1.00)",  // visible neon white-blue
+    fontSize: 17,
+  }}
+  className="lesson-content"
+>
+  <Component />
+</div>
 
-        {/* NEXT/PREV BUTTONS */}
+        {/* Navigation buttons */}
         <div
           style={{
             display: "flex",

@@ -1,32 +1,52 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
 
-// ROUTES
 const adminRoutes = require("./src/routes/adminRoutes");
 const userRoutes = require("./src/routes/userRoutes");
+const resumeRoutes = require("./src/routes/resumes");   // ✅ FIXED PATH
 
 const app = express();
 
-// MIDDLEWARES
-app.use(cors());
-app.use(express.json());  // <-- SUPER IMPORTANT
-app.use(express.urlencoded({ extended: true })); // optional but recommended
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
-// ADMIN ROUTES
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// SESSION
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "supersecret_session_key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000,
+    },
+  })
+);
+
+// MAIN ROUTES
 app.use("/admin", adminRoutes);
-
-// USER ROUTES
 app.use("/auth/user", userRoutes);
+app.use("/api/resumes", resumeRoutes);   // ✅ ADD THIS
 
 // ERROR HANDLER
 app.use((err, req, res, next) => {
   console.error(err);
-  res
-    .status(err.status || 500)
-    .json({ error: err.message || "Server error" });
+  res.status(err.status || 500).json({ error: err.message });
 });
 
-// SERVER START
+// START SERVER
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));
