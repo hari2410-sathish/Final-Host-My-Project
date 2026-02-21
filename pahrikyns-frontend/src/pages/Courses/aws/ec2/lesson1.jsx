@@ -1,150 +1,183 @@
 ﻿// src/pages/Courses/aws/cloud-basics/lesson1.jsx
+import React from "react";
+import { Box, Typography } from "@mui/material";
+import StorageIcon from "@mui/icons-material/Storage";
+import CloudIcon from "@mui/icons-material/Cloud";
+import ComputerIcon from "@mui/icons-material/Computer";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 
 export const meta = {
-  title: "Cloud Basics – Lesson 1: What is Cloud Computing?",
+  title: "AWS Basics – Lesson 1: AWS, Cloud & EC2",
   description:
-    "Learn what cloud computing is, how it works, and why AWS is the most popular cloud platform. This beginner-friendly lesson explains cloud concepts with real-world examples.",
+    "Introduction to AWS, why we use it (vs On-Premise), and a deep dive into EC2 with visual diagrams.",
   difficulty: "Beginner",
-  duration: "50 min",
-  tags: [["aws"], ["cloud-basics"], ["cloud-computing"]],
-  updated: "2026-01-06",
+  duration: "60 min",
+  tags: [["aws"], ["ec2"], ["cloud-computing"]],
+  updated: "2026-02-18",
   thumbnail: "/assets/aws/cloud-basics/lesson1.png",
 };
 
+/**
+ * Diagram Component: On-Premise vs Cloud
+ */
+const VsDiagram = () => (
+  <Box className="flex flex-col md:flex-row gap-8 my-8 justify-center items-stretch">
+    {/* On-Premise */}
+    <Box className="flex-1 bg-red-900/10 border border-red-500/30 p-6 rounded-xl flex flex-col items-center text-center">
+      <Typography variant="h6" className="text-red-400 font-bold mb-4">🚫 On-Premise (Old Way)</Typography>
+      <Box className="flex gap-2 mb-4">
+        <StorageIcon className="text-gray-500 text-6xl" sx={{ fontSize: 60 }} />
+        <StorageIcon className="text-gray-500 text-6xl" sx={{ fontSize: 60 }} />
+      </Box>
+      <ul className="text-gray-400 text-sm text-left list-none space-y-2">
+        <li className="flex items-center gap-2"><CancelIcon fontSize="small" color="error" /> Buy Servers (High Cost)</li>
+        <li className="flex items-center gap-2"><CancelIcon fontSize="small" color="error" /> Pay Maintenance</li>
+        <li className="flex items-center gap-2"><CancelIcon fontSize="small" color="error" /> Can't Scale Quickly</li>
+      </ul>
+    </Box>
+
+    {/* Cloud */}
+    <Box className="flex-1 bg-green-900/10 border border-green-500/30 p-6 rounded-xl flex flex-col items-center text-center">
+      <Typography variant="h6" className="text-green-400 font-bold mb-4">✅ AWS Cloud (New Way)</Typography>
+      <Box className="relative mb-4">
+        <CloudIcon className="text-blue-400 text-8xl" sx={{ fontSize: 100, opacity: 0.8 }} />
+        <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex gap-1">
+          <StorageIcon className="text-white text-2xl" />
+          <StorageIcon className="text-white text-2xl" />
+        </Box>
+      </Box>
+      <ul className="text-gray-300 text-sm text-left list-none space-y-2">
+        <li className="flex items-center gap-2"><CheckCircleIcon fontSize="small" color="success" /> Rent Servers (Low Cost)</li>
+        <li className="flex items-center gap-2"><CheckCircleIcon fontSize="small" color="success" /> No Maintenance</li>
+        <li className="flex items-center gap-2"><CheckCircleIcon fontSize="small" color="success" /> Scale in Minutes</li>
+      </ul>
+    </Box>
+  </Box>
+);
+
+/**
+ * Diagram Component: EC2 Instance
+ */
+const EC2Diagram = () => (
+  <Box className="my-8 p-8 bg-blue-900/10 border border-blue-500/30 rounded-xl relative overflow-hidden">
+    <Typography variant="h6" className="text-blue-300 font-bold mb-6 text-center">How EC2 Works</Typography>
+
+    <Box className="flex flex-col md:flex-row items-center justify-center gap-8">
+      {/* User */}
+      <Box className="text-center">
+        <ComputerIcon className="text-white mx-auto mb-2" sx={{ fontSize: 50 }} />
+        <Typography className="text-gray-300">You (Developer)</Typography>
+      </Box>
+
+      <ArrowRightAltIcon className="text-gray-500 hidden md:block" sx={{ fontSize: 40 }} />
+
+      {/* AWS Console */}
+      <Box className="bg-gray-800 p-4 rounded-lg border border-gray-600 text-center w-40">
+        <Typography className="text-orange-400 font-bold">AWS Console</Typography>
+        <Typography variant="caption" className="text-gray-400">"Launch Instance"</Typography>
+      </Box>
+
+      <ArrowRightAltIcon className="text-gray-500 hidden md:block" sx={{ fontSize: 40 }} />
+
+      {/* EC2 Instance */}
+      <Box className="bg-[#0f172a] p-6 rounded-xl border border-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.3)] text-center relative w-48">
+        <Box className="absolute -top-3 -right-3 bg-green-500 text-black text-xs font-bold px-2 py-1 rounded-full">RUNNING</Box>
+        <StorageIcon className="text-blue-400 mx-auto mb-2" sx={{ fontSize: 60 }} />
+        <Typography className="text-white font-bold">EC2 Instance</Typography>
+        <Typography variant="caption" className="text-gray-400 block mt-1">Virtual Server</Typography>
+        <div className="mt-2 text-[10px] text-gray-500 font-mono">
+          CPU: 2 vCPU<br />
+          RAM: 4 GB<br />
+          OS: Ubuntu
+        </div>
+      </Box>
+    </Box>
+  </Box>
+);
+
 function Lesson1() {
   return (
-    <div className="lesson-container">
-      {/* ========================= */}
-      {/* LESSON TITLE */}
-      {/* ========================= */}
-      <h1>What is Cloud Computing?</h1>
+    <div className="lesson-container max-w-4xl mx-auto">
+      {/* ================= HEADER ================= */}
+      <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 mb-6">
+        What is AWS & EC2?
+      </h1>
 
-      <p>
-        Cloud computing is the foundation of modern IT infrastructure. Instead
-        of buying and maintaining physical servers, cloud computing allows you
-        to access computing resources such as servers, storage, databases, and
-        networking over the internet.
+      <p className="text-lg text-gray-300 mb-8 leading-relaxed">
+        Simple-a sollanum na, <strong>AWS (Amazon Web Services)</strong> oru online rental shop maari.
+        Instead of buying expensive computers (Servers) for your business, you can "rent" them from Amazon over the internet.
       </p>
 
-      {/* ========================= */}
-      {/* SECTION 1 */}
-      {/* ========================= */}
-      <h2>1. Understanding Cloud Computing</h2>
-      <p>
-        Cloud computing means renting computing power instead of owning it. You
-        can create servers, store data, and run applications without purchasing
-        hardware or building data centers.
-      </p>
+      {/* ================= SECTION 1: What is AWS ================= */}
+      <Box className="mb-12">
+        <h2 className="text-2xl font-bold text-white mb-4 border-l-4 border-blue-500 pl-4">1. What is AWS?</h2>
+        <p className="text-gray-300 mb-4">
+          AWS stands for <strong>Amazon Web Services</strong>. It is a secure cloud services platform, offering compute power,
+          database storage, content delivery, and other functionality to help businesses scale and grow.
+        </p>
+        <p className="text-gray-400 italic bg-gray-900/50 p-4 rounded-lg border-l-2 border-yellow-500">
+          💡 <strong>Tanglish Explanation:</strong> Veetla power cut aana inverter use pandrom. But periya factory kku nammala power generate panna mudiyathu, so we buy from EB (Electricity Board).
+          Athe maari, chinna app ku laptop ok, but periya website (like Netflix, Hotstar) ku <strong>AWS Cloud</strong> la irunthu servers rent pannuvanga.
+        </p>
+      </Box>
 
-      <p>
-        Cloud services are delivered on-demand, meaning you can start and stop
-        resources whenever you want and pay only for what you use.
-      </p>
+      {/* ================= SECTION 2: Why AWS? (Diagram) ================= */}
+      <Box className="mb-12">
+        <h2 className="text-2xl font-bold text-white mb-4 border-l-4 border-green-500 pl-4">2. Why use AWS? (Vs Traditional)</h2>
+        <p className="text-gray-300 mb-4">
+          Before AWS, companies had to build their own "Data Centers". This was costly and slow.
+          AWS changed this with the <strong>Pay-as-you-go</strong> model.
+        </p>
 
-      {/* ========================= */}
-      {/* SECTION 2 */}
-      {/* ========================= */}
-      <h2>2. Real-World Example</h2>
-      <p>
-        Imagine launching an online shopping website. Without cloud computing,
-        you must buy servers, install operating systems, and manage networking.
-        With AWS cloud, you can launch a server within minutes using just a few
-        clicks.
-      </p>
+        {/* DIAGRAM 1 */}
+        <VsDiagram />
 
-      {/* ========================= */}
-      {/* SECTION 3 */}
-      {/* ========================= */}
-      <h2>3. Traditional IT vs Cloud Computing</h2>
-      <ul>
-        <li>Traditional IT requires heavy upfront investment</li>
-        <li>Cloud uses a pay-as-you-go pricing model</li>
-        <li>Cloud allows instant scalability</li>
-        <li>Cloud reduces maintenance overhead</li>
-      </ul>
+        <p className="text-gray-300 mt-4">
+          <strong>Key Benefits:</strong>
+        </p>
+        <ul className="list-disc pl-6 space-y-2 text-gray-300">
+          <li><strong>Cost:</strong> Pay only for what you use (Hourly/Per Second).</li>
+          <li><strong>Speed:</strong> Launch thousands of servers in minutes.</li>
+          <li><strong>Global:</strong> Deploy your app in USA, India, or Japan with one click.</li>
+        </ul>
+      </Box>
 
-      {/* ========================= */}
-      {/* SECTION 4 */}
-      {/* ========================= */}
-      <h2>4. Types of Cloud Services</h2>
+      {/* ================= SECTION 3: What is EC2? ================= */}
+      <Box className="mb-12">
+        <h2 className="text-2xl font-bold text-white mb-4 border-l-4 border-orange-500 pl-4">3. What is EC2?</h2>
+        <p className="text-gray-300 mb-4">
+          <strong>EC2 (Elastic Compute Cloud)</strong> is one of the most popular services in AWS.
+          It basically provides <strong>Virtual Servers</strong> in the cloud.
+        </p>
+        <p className="text-gray-400 italic bg-gray-900/50 p-4 rounded-lg border-l-2 border-yellow-500 mb-6">
+          💡 <strong>Simple Terms:</strong> EC2 is just a computer somewhere in Amazon's building.
+          You can remotely control it. You can install Windows, Linux, run Python scripts, host a website, anything!
+        </p>
 
-      <h3>IaaS (Infrastructure as a Service)</h3>
-      <p>
-        Infrastructure as a Service provides virtual servers, storage, and
-        networking. Example: Amazon EC2.
-      </p>
+        {/* DIAGRAM 2 */}
+        <EC2Diagram />
 
-      <h3>PaaS (Platform as a Service)</h3>
-      <p>
-        Platform as a Service allows developers to deploy applications without
-        managing infrastructure. Example: AWS Elastic Beanstalk.
-      </p>
+        <h3 className="text-xl font-bold text-blue-300 mb-3 mt-6">Why is it called "Elastic"?</h3>
+        <p className="text-gray-300">
+          <strong>Elastic</strong> means flexible. 
+           In Diwali sale, traffic increases -> You can add 10 more EC2 servers instantly.
+           Sale over -> You can delete them instantly.
+          Rubber band maari expand and shrink pannalam. That's why it's called <strong>Elastic Compute Cloud</strong>.
+        </p>
+      </Box>
 
-      <h3>SaaS (Software as a Service)</h3>
-      <p>
-        Software as a Service provides ready-to-use applications over the
-        internet. Example: Gmail, Zoom.
-      </p>
-
-      {/* ========================= */}
-      {/* SECTION 5 */}
-      {/* ========================= */}
-      <h2>5. What is AWS?</h2>
-      <p>
-        AWS stands for Amazon Web Services. It is the world’s largest cloud
-        computing platform offering more than 200 services including computing,
-        storage, networking, security, and analytics.
-      </p>
-
-      {/* ========================= */}
-      {/* SECTION 6 */}
-      {/* ========================= */}
-      <h2>6. AWS Global Infrastructure</h2>
-      <p>
-        AWS operates globally using Regions and Availability Zones. Each region
-        contains multiple data centers to ensure high availability and fault
-        tolerance.
-      </p>
-
-      {/* ========================= */}
-      {/* SECTION 7 */}
-      {/* ========================= */}
-      <h2>7. Benefits of Cloud Computing</h2>
-      <ul>
-        <li>Scalability</li>
-        <li>High availability</li>
-        <li>Security</li>
-        <li>Cost efficiency</li>
-        <li>Global reach</li>
-      </ul>
-
-      {/* ========================= */}
-      {/* SECTION 8 */}
-      {/* ========================= */}
-      <h2>8. Cloud Computing in Daily Life</h2>
-      <p>
-        Services like WhatsApp, Google Drive, Netflix, and YouTube run entirely
-        on cloud infrastructure.
-      </p>
-
-      {/* ========================= */}
-      {/* SECTION 9 */}
-      {/* ========================= */}
-      <h2>9. Cloud Careers</h2>
-      <p>
-        Learning AWS opens doors to careers such as Cloud Engineer, DevOps
-        Engineer, and Solutions Architect with high salary potential.
-      </p>
-
-      {/* ========================= */}
-      {/* SECTION 10 */}
-      {/* ========================= */}
-      <h2>10. Summary</h2>
-      <p>
-        Cloud computing allows businesses and individuals to use powerful IT
-        resources without owning hardware. AWS is the leading cloud provider and
-        mastering it is a valuable career skill.
-      </p>
+      {/* ================= SECTION 4: Summary ================= */}
+      <Box className="bg-gradient-to-r from-blue-900/20 to-purple-900/20 p-6 rounded-xl border border-blue-500/20">
+        <h2 className="text-xl font-bold text-white mb-2">Summary</h2>
+        <ul className="list-disc pl-6 space-y-2 text-gray-300">
+          <li><strong>AWS</strong> is a cloud provider (rents servers).</li>
+          <li><strong>Cloud Computing</strong> saves money (No upfront cost).</li>
+          <li><strong>EC2</strong> is a Virtual Server provided by AWS.</li>
+          <li>It is <strong>Elastic</strong> (scalable) and <strong>Pay-as-you-go</strong>.</li>
+        </ul>
+      </Box>
     </div>
   );
 }

@@ -48,113 +48,14 @@ import Tooltip from "@mui/material/Tooltip";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../contexts/AuthContext";
+import { COURSE_DATA, RESUME_MENU } from "../../data/courseData.jsx"; // ✅ Added Import
+
 // ❌ ThemeToggle component remove pannirukken –
 // nested <button> → <button> warning avoid panradhu.
-const NAV_HEIGHT = 60;
+const NAV_HEIGHT = 70;
 
 /* MENU STRUCTURE */
-const MENU = {
-  devops: {
-    title: "DevOps",
-    desc: "CI/CD, containers & infra automation",
-    items: [
-      { name: "Git", link: "/courses/devops/git", icon: <GitHubIcon /> },
-      { name: "Docker", link: "/courses/devops/docker", icon: <AdbIcon /> },
-      {
-        name: "Jenkins",
-        link: "/courses/devops/jenkins",
-        icon: <PrecisionIcon />,
-      },
-      {
-        name: "Kubernetes",
-        link: "/courses/devops/kubernetes",
-        icon: <CloudQueueIcon />,
-      },
-      {
-        name: "Terraform",
-        link: "/courses/devops/terraform",
-        icon: <ConstructionIcon />,
-      },
-      {
-        name: "Prometheus",
-        link: "/courses/devops/prometheus",
-        icon: <StorageIcon />,
-      },
-      { name: "Grafana", link: "/courses/devops/grafana", icon: <LayersIcon /> },
-      { name: "Ansible", link: "/courses/devops/ansible", icon: <BuildIcon /> },
-    ],
-  },
-
-  aws: {
-    title: "AWS",
-    desc: "Core AWS services",
-    items: [
-      { name: "EC2", link: "/courses/aws/ec2", icon: <StorageIcon /> },
-      { name: "S3", link: "/courses/aws/s3", icon: <StorageIcon /> },
-      { name: "IAM", link: "/courses/aws/iam", icon: <CodeIcon /> },
-      { name: "Lambda", link: "/courses/aws/lambda", icon: <CodeIcon /> },
-      { name: "VPC", link: "/courses/aws/vpc", icon: <CloudIcon /> },
-      { name: "RDS", link: "/courses/aws/rds", icon: <StorageIcon /> },
-      { name: "Route53", link: "/courses/aws/route53", icon: <CloudIcon /> },
-      {
-        name: "Auto Scaling",
-        link: "/courses/aws/auto-scaling",
-        icon: <CloudIcon />,
-      },
-      { name: "SQS", link: "/courses/aws/sqs", icon: <StorageIcon /> },
-      { name: "SNS", link: "/courses/aws/sns", icon: <CloudIcon /> },
-    ],
-  },
-
-  Script: {
-    title: "SCRIPT",
-    desc: "Core Script services",
-    items: [
-      {
-        name: "DOCKERFILE",
-        link: "/courses/script/dockerfile",
-        icon: <StorageIcon />,
-      },
-      { name: "YAML", link: "/courses/script/yaml", icon: <StorageIcon /> },
-      { name: "GROOVE", link: "/courses/script/groove", icon: <CodeIcon /> },
-    ],
-  },
-
-  os: {
-    title: "OS",
-    desc: "Operating systems & scripting",
-    items: [
-      {
-        name: "Linux Basics",
-        link: "/courses/os/linux-basics",
-        icon: <CodeIcon />,
-      },
-      { name: "Ubuntu", link: "/courses/os/ubuntu", icon: <CodeIcon /> },
-      { name: "CentOS", link: "/courses/os/centos", icon: <CodeIcon /> },
-      { name: "Red Hat", link: "/courses/os/redhat", icon: <CodeIcon /> },
-      {
-        name: "Windows Shell",
-        link: "/courses/os/windows-shell-script",
-        icon: <CodeIcon />,
-      },
-      {
-        name: "Ubuntu Shell",
-        link: "/courses/os/ubuntu-shell-script",
-        icon: <CodeIcon />,
-      },
-    ],
-  },
-};
-// ✅ RESUME MENU (ONLY RESUME)
-const RESUME_MENU = {
-  title: "Resume",
-  desc: "Build your professional resume",
-  items: [
-    { name: "Templates", link: "/resume/templates" },
-    { name: "Build Resume", link: "/resume/builder" },
-    { name: "My Resumes", link: "/resume" },
-  ],
-};
+const MENU = COURSE_DATA; // ✅ Use centralized data
 
 // 🔍 FLATTEN DATA FOR SEARCH
 const getAllSearchItems = () => {
@@ -203,6 +104,23 @@ export default function MainNavbar() {
   const [showResults, setShowResults] = useState(false);  // 🔍 Toggle Results
   const [drawer, setDrawer] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+
+  // Hover intent timer to avoid popper flicker when moving between button and menu
+  const closeTimerRef = useRef(null);
+
+  const clearCloseTimer = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+
+  const startCloseTimer = (delay = 200) => {
+    clearCloseTimer();
+    closeTimerRef.current = setTimeout(() => {
+      closeMenu();
+    }, delay);
+  };
 
   // Profile dropdown
   const [profileOpen, setProfileOpen] = useState(false);
@@ -361,12 +279,18 @@ export default function MainNavbar() {
               ref={coursesBtnRef}
               sx={navBtn}
               onMouseEnter={() => {
+                clearCloseTimer();
                 setActive("devops");
                 setOpen(true);
               }}
+              onMouseLeave={() => {
+                startCloseTimer();
+              }}
               onClick={() => {
-                setActive("devops");
-                setOpen((v) => !v);
+                clearCloseTimer();
+                navigate("/courses"); // ✅ Navigate to /courses
+                // setActive("devops"); // Optional: if you want the menu to open/stay open
+                setOpen(false); // Close menu if navigating
               }}
             >
               Courses ▾
@@ -376,18 +300,19 @@ export default function MainNavbar() {
             ref={resumeBtnRef}   // ✅ THIS LINE IMPORTANT
             sx={navBtn}
             onMouseEnter={() => {
+              clearCloseTimer();
               setActive("resume");
               setOpen(true);
             }}
+            onMouseLeave={() => startCloseTimer()}
             onClick={() => {
+              clearCloseTimer();
               setActive("resume");
               setOpen(true);
             }}
           >
             Resume ▾
           </Button>
-
-
           <Box sx={{ flex: 1 }} />
 
           {/* RIGHT */}
@@ -411,7 +336,6 @@ export default function MainNavbar() {
                   },
                 }}
               >
-
                 <InputBase
                   placeholder="search..."
                   value={query}
@@ -655,13 +579,14 @@ export default function MainNavbar() {
         }
         placement="bottom-start"
         modifiers={[{ name: "offset", options: { offset: [0, 15] } }]}
-        onMouseLeave={closeMenu}
+        onMouseEnter={() => clearCloseTimer()}
+        onMouseLeave={() => startCloseTimer()}
       >
 
         <ClickAwayListener onClickAway={closeMenu}>
           <Paper
             sx={{
-              width: 530,
+              width: active === "resume" ? 300 : 530,
               display: "inline-flex",
               borderRadius: 2,
               background: "linear-gradient(180deg,#041225,#021018)",
@@ -672,59 +597,69 @@ export default function MainNavbar() {
               overflow: "hidden",
             }}
           >
-            {/* MENU A */}
-            <Box
-              sx={{
-                width: 240,
-                borderRight: "1px solid rgba(255,255,255,0.06)",
-              }}
-            >
-              <List>
-                {Object.entries(MENU).map(([key, cat]) => (
-                  <ListItemButton
-                    key={key}
-                    selected={active === key}
-                    onMouseEnter={() => setActive(key)}
-                    sx={{ py: 2 }}
-                  >
-                    <ListItemIcon sx={{ color: "#00eaff" }}>
-                      {key === "devops" ? (
-                        <BuildIcon />
-                      ) : key === "aws" ? (
-                        <CloudIcon />
-                      ) : (
-                        <ComputerIcon />
-                      )}
-                    </ListItemIcon>
+            {/* MENU A - ONLY SHOW IF NOT RESUME */}
+            {active !== "resume" && (
+              <Box
+                sx={{
+                  width: 240,
+                  borderRight: "1px solid rgba(255,255,255,0.06)",
+                }}
+              >
+                <List>
+                  {Object.entries(MENU).map(([key, cat]) => (
+                    <ListItemButton
+                      key={key}
+                      selected={active === key}
+                      onMouseEnter={() => setActive(key)}
+                      sx={{ py: 2 }}
+                    >
+                      <ListItemIcon sx={{ color: "#00eaff" }}>
+                        {key === "devops" ? (
+                          <BuildIcon />
+                        ) : key === "aws" ? (
+                          <CloudIcon />
+                        ) : (
+                          <ComputerIcon />
+                        )}
+                      </ListItemIcon>
 
-                    <ListItemText
-                      primary={
-                        <Typography
-                          sx={{
-                            color: active === key ? "#00eaff" : "#fff",
-                            fontWeight: 800,
-                          }}
-                        >
-                          {cat.title}
-                        </Typography>
-                      }
-                      secondary={
-                        <Typography
-                          sx={{ fontSize: 12, color: "#aaa" }}
-                        >
-                          {cat.desc}
-                        </Typography>
-                      }
-                    />
-                  </ListItemButton>
-                ))}
-              </List>
-            </Box>
+                      <ListItemText
+                        primary={
+                          <Typography
+                            sx={{
+                              color: active === key ? "#00eaff" : "#fff",
+                              fontWeight: 800,
+                            }}
+                          >
+                            {cat.title}
+                          </Typography>
+                        }
+                        secondary={
+                          <Typography sx={{ fontSize: 12, color: "#aaa" }}>
+                            {cat.desc}
+                          </Typography>
+                        }
+                      />
+                    </ListItemButton>
+                  ))}
+                </List>
+              </Box>
+            )}
 
             {/* MENU B */}
-            <Box sx={{ flex: 1, p: 3 }}>
+            <Box sx={{ flex: 1, p: 3, minWidth: active === "resume" ? 300 : "auto" }}>
               <Typography
-                sx={{ color: "#00eaff", fontWeight: 900, mb: 1 }}
+                component={Link}
+                to={MENU[active]?.link || "#"}
+                onClick={closeMenu}
+                sx={{
+                  color: "#00eaff",
+                  fontWeight: 900,
+                  mb: 1,
+                  display: "inline-block",
+                  textDecoration: "none",
+                  "&:hover": { textDecoration: "underline" }
+                }}
               >
                 {MENU[active]?.title}
               </Typography>

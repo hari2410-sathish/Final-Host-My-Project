@@ -12,33 +12,35 @@ export default function GenericLesson({ data }) {
         <Box>
             {/* VIDEO SECTION */}
             {videoUrl && (
-                <Paper
-                    elevation={10}
-                    sx={{
-                        overflow: "hidden",
-                        borderRadius: 4,
-                        mb: 4,
-                        border: "1px solid rgba(0, 234, 255, 0.2)",
-                        position: "relative",
-                        paddingTop: "56.25%", // 16:9 Aspect Ratio
-                        bgcolor: "#000",
-                    }}
-                >
-                    <iframe
-                        src={videoUrl}
-                        title={title}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        style={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
+                <Box sx={{ maxWidth: "450px", mx: "auto", mb: 4 }}>
+                    <Paper
+                        elevation={10}
+                        sx={{
+                            overflow: "hidden",
+                            borderRadius: 4,
+                            border: "1px solid rgba(0, 234, 255, 0.2)",
+                            position: "relative",
+                            paddingTop: "56.25%", // 16:9 Aspect Ratio
+                            bgcolor: "#000",
                             width: "100%",
-                            height: "100%",
-                            border: "none",
                         }}
-                    />
-                </Paper>
+                    >
+                        <iframe
+                            src={videoUrl}
+                            title={title}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                border: "none",
+                            }}
+                        />
+                    </Paper>
+                </Box>
             )}
 
             {/* TEXT CONTENT */}

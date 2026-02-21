@@ -104,8 +104,6 @@ export default function ThreadPanel() {
                             }
                         }}
                     />
-                        }}
-                    />
                     <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
                         <EmojiPickerButton onEmojiClick={(emoji) => setReplyText(prev => prev + emoji)} />
 

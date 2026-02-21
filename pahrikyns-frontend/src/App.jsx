@@ -12,6 +12,8 @@ import CategoryPage from "./pages/Courses/CategoryPage";
 import ToolPage from "./pages/Courses/ToolPage";
 import LessonViewer from "./pages/Courses/LessonViewer";
 import MyCourses from "./pages/User/MyCourses"; // ✅ Added Import
+import CoursesHome from "./pages/Courses/CoursesHome"; // ✅ Added Import
+import PricingPage from "./pages/Subscription/PricingPage"; // ✅ Added Import
 
 /* ================= USER AUTH ================= */
 import Login from "./pages/Auth/Login";
@@ -131,7 +133,9 @@ export default function App() {
         <Route path="/courses/:category" element={<CategoryPage />} />
         <Route path="/courses/:category/:tool" element={<ToolPage />} />
         <Route path="/courses/:category/:tool/:lessonId" element={<LessonViewer />} />
+        <Route path="/courses" element={<CoursesHome />} /> {/* ✅ Added Route */}
         <Route path="/my-courses" element={<MyCourses />} /> {/* ✅ New Route */}
+        <Route path="/pricing" element={<PricingPage />} /> {/* ✅ Subscription Route */}
       </Route>
 
       {/* 🔥 CHAT */}
@@ -284,7 +288,7 @@ export default function App() {
       <Route
         path="/resume"
         element={
-          <ResumeAccessGuard requireAuth>
+          <ResumeAccessGuard>
             <ResumeLayout />
           </ResumeAccessGuard>
         }

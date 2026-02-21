@@ -41,8 +41,6 @@ export default function MessageList() {
         py: 0,
       }}
     >
-      }}
-    >
       {messages
         .filter(msg => !msg.threadId) // Hide Thread Replies
         .map((msg, index, filteredArray) => {

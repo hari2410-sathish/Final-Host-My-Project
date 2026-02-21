@@ -10,11 +10,16 @@
 };
 
 // Optional images (placeholders)
-import ProjectImg from "../../../../assets/projects/fullstack.png";
-import MicroImg from "../../../../assets/projects/microservices.png";
-import CiImg from "../../../../assets/projects/cicd.png";
-import K8sImg from "../../../../assets/projects/kubernetes.png";
-import SwarmImg from "../../../../assets/projects/swarm.png";
+// import ProjectImg from "../../../../../assets/projects/fullstack.png";
+const ProjectImg = "";
+// import MicroImg from "../../../../assets/projects/microservices.png";
+// import CiImg from "../../../../assets/projects/cicd.png";
+// import K8sImg from "../../../../assets/projects/kubernetes.png";
+// import SwarmImg from "../../../../assets/projects/swarm.png";
+const MicroImg = "";
+const CiImg = "";
+const K8sImg = "";
+const SwarmImg = "";
 
 export default function Lesson15AllProjects() {
   const { langKey } = useLanguage();
@@ -45,7 +50,7 @@ export default function Lesson15AllProjects() {
           Structure (recommended repo layout):
         </p>
         <pre style={pre}>
-{`/project-fullstack
+          {`/project-fullstack
   /frontend   (React app)
     Dockerfile
   /backend    (Node/Express app)
@@ -59,7 +64,7 @@ export default function Lesson15AllProjects() {
 
         <h3>Frontend Dockerfile (frontend/Dockerfile)</h3>
         <pre style={pre}>
-{`# multi-stage build for React
+          {`# multi-stage build for React
 FROM node:20-alpine AS build
 WORKDIR /app
 COPY package*.json ./
@@ -77,7 +82,7 @@ CMD ["nginx", "-g", "daemon off;"]`}
 
         <h3>Backend Dockerfile (backend/Dockerfile)</h3>
         <pre style={pre}>
-{`FROM node:20-alpine
+          {`FROM node:20-alpine
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm ci --only=production
@@ -89,7 +94,7 @@ CMD ["node", "server.js"]`}
 
         <h3>Nginx config (nginx/nginx.conf)</h3>
         <pre style={pre}>
-{`server {
+          {`server {
   listen 80;
   server_name _;
   location / {
@@ -106,7 +111,7 @@ CMD ["node", "server.js"]`}
 
         <h3>docker-compose.yml (top-level)</h3>
         <pre style={pre}>
-{`version: '3.8'
+          {`version: '3.8'
 services:
   frontend:
     build:
@@ -175,7 +180,7 @@ networks:
 
         <h3>Quick local run</h3>
         <pre style={pre}>
-{`# from /project-fullstack
+          {`# from /project-fullstack
 docker-compose up --build -d
 
 # view logs
@@ -197,7 +202,7 @@ docker-compose down -v`}
 
         <p>Repo layout (one repository with folders for each microservice):</p>
         <pre style={pre}>
-{`/project-micro
+          {`/project-micro
   /gateway   (NGINX or Kong/Traefik)
   /user      (Node service)
   /order     (Node service)
@@ -207,7 +212,7 @@ docker-compose down -v`}
 
         <h3>Example docker-compose (micro) — simplified</h3>
         <pre style={pre}>
-{`version: '3.8'
+          {`version: '3.8'
 services:
   gateway:
     image: traefik:latest
@@ -294,7 +299,7 @@ networks:
 
         <h3>.github/workflows/ci-cd.yml (GitHub Actions)</h3>
         <pre style={pre}>
-{`name: CI/CD Docker
+          {`name: CI/CD Docker
 
 on:
   push:
@@ -374,7 +379,7 @@ jobs:
 
         <h3>k8s/frontend-deployment.yaml</h3>
         <pre style={pre}>
-{`apiVersion: apps/v1
+          {`apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
@@ -413,7 +418,7 @@ spec:
 
         <h3>k8s/backend-deployment.yaml</h3>
         <pre style={pre}>
-{`apiVersion: apps/v1
+          {`apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
@@ -451,7 +456,7 @@ spec:
 
         <h3>k8s/mongo-statefulset.yaml</h3>
         <pre style={pre}>
-{`apiVersion: apps/v1
+          {`apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mongo
@@ -486,7 +491,7 @@ spec:
 
         <h3>Ingress (example with NGINX Ingress)</h3>
         <pre style={pre}>
-{`apiVersion: networking.k8s.io/v1
+          {`apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: project-ingress
@@ -537,7 +542,7 @@ spec:
 
         <h3>stack-swarm.yml</h3>
         <pre style={pre}>
-{`version: "3.9"
+          {`version: "3.9"
 
 services:
   nginx:
@@ -599,7 +604,7 @@ configs:
 
         <h3>Deploy to swarm</h3>
         <pre style={pre}>
-{`# init swarm (on manager)
+          {`# init swarm (on manager)
 docker swarm init --advertise-addr <MANAGER_IP>
 
 # deploy stack

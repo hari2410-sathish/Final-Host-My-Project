@@ -1,8 +1,26 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import "./Home.css";
+import {
+  Box,
+  Container,
+  Grid,
+  Typography,
+  Button,
+  Stack,
+  useTheme,
+  useMediaQuery,
+  IconButton,
+  Card,
+  CardContent,
+  Avatar,
+  AvatarGroup
+} from "@mui/material";
+import { motion } from "framer-motion"; // Optional: For smoother animations if available, or stick to CSS/JS
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import StarIcon from '@mui/icons-material/Star';
 
-/* ✅✅ IMPORT COMPANY LOGOS */
 import infosys from "../../assets/logos/infosys.png";
 import tcs from "../../assets/logos/tcs.png";
 import wipro from "../../assets/logos/wipro.png";
@@ -10,358 +28,360 @@ import accenture from "../../assets/logos/accenture.png";
 import amazon from "../../assets/logos/amazon.png";
 import zoho from "../../assets/logos/zoho.png";
 
-const AnimatedStat = ({ value, label }) => {
+// Simple Intersection Observer hook used by some sections
+const useScrollAnimation = () => {
+  const [visible, setVisible] = useState({});
+
+  useEffect(() => {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) setVisible((s) => ({ ...s, [e.target.id || e.target.dataset.key]: true }));
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll("[data-scroll-animate]").forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+
+  return visible;
+};
+
+const AnimatedStat = ({ value, label, size = 48 }) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
     let start = 0;
-    const end = parseInt(value);
-    if (start === end) return;
-
-    let timer = setInterval(() => {
-      start += Math.ceil(end / 50);
-      if (start > end) start = end;
-      setCount(start);
-    }, 30);
-
-    return () => clearInterval(timer);
+    const end = Number(value) || 0;
+    if (!end) return;
+    const step = Math.max(1, Math.floor(end / 60));
+    const id = setInterval(() => {
+      start += step;
+      if (start >= end) {
+        setCount(end);
+        clearInterval(id);
+      } else setCount(start);
+    }, 16);
+    return () => clearInterval(id);
   }, [value]);
 
   return (
-    <div style={{ textAlign: "center" }}>
-      <div style={{ fontSize: "32px", fontWeight: "800", background: "linear-gradient(90deg, #00eaff, #7b3fe4)", WebkitBackgroundClip: "text", color: "transparent" }}>
+    <Box sx={{ textAlign: "left" }}>
+      <Typography variant="h3" sx={{ fontWeight: 900, lineHeight: 1, fontSize: { xs: 36, md: size } }}>
         {count}+
-      </div>
-      <div style={{ fontSize: "14px", color: "rgba(255,255,255,0.6)", marginTop: "5px", textTransform: "uppercase", letterSpacing: "1px" }}>{label}</div>
-    </div>
+      </Typography>
+      <Typography variant="body2" sx={{ mt: 1, opacity: 0.7, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>
+        {label}
+      </Typography>
+    </Box>
   );
 };
 
 const Feature = ({ icon, title, desc }) => (
-  <div style={{
-    background: "rgba(255, 255, 255, 0.03)",
-    backdropFilter: "blur(10px)",
-    border: "1px solid rgba(255, 255, 255, 0.05)",
-    borderRadius: "16px",
-    padding: "24px",
-    transition: "transform 0.3s ease",
-    cursor: "default"
-  }}
-    onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-5px)"}
-    onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
-  >
-    <div style={{ fontSize: "32px", marginBottom: "16px" }}>{icon}</div>
-    <h4 style={{ fontSize: "18px", fontWeight: "700", marginBottom: "8px", color: "#fff" }}>{title}</h4>
-    <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.5)", lineHeight: "1.6" }}>{desc}</p>
-  </div>
+  <Card sx={{
+    height: '100%',
+    bgcolor: "rgba(255,255,255,0.02)",
+    border: "1px solid rgba(255,255,255,0.03)",
+    borderRadius: 3,
+    transition: 'transform 0.2s',
+    '&:hover': { transform: 'translateY(-5px)', bgcolor: "rgba(255,255,255,0.05)" }
+  }}>
+    <CardContent sx={{ p: 3 }}>
+      <Typography variant="h3" sx={{ mb: 2 }}>{icon}</Typography>
+      <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>{title}</Typography>
+      <Typography variant="body2" sx={{ opacity: 0.65 }}>{desc}</Typography>
+    </CardContent>
+  </Card>
 );
 
 const CourseCard = ({ title, desc, link, tag }) => (
-  <div style={{
-    background: "linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
-    borderRadius: "16px",
-    padding: "24px",
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-    position: "relative",
-    overflow: "hidden"
+  <Card sx={{
+    height: '100%',
+    bgcolor: "rgba(255,255,255,0.02)",
+    border: "1px solid rgba(255,255,255,0.03)",
+    borderRadius: 3,
+    position: 'relative',
+    transition: 'all 0.2s',
+    '&:hover': { transform: 'translateY(-5px)', borderColor: 'rgba(0,234,255,0.3)' }
   }}>
-    <div style={{
-      position: "absolute",
-      top: "0",
-      right: "0",
-      background: "#00eaff",
-      color: "#000",
-      fontSize: "10px",
-      fontWeight: "800",
-      padding: "4px 12px",
-      borderBottomLeftRadius: "12px"
-    }}>{tag}</div>
-
-    <h3 style={{ fontSize: "20px", fontWeight: "700", marginBottom: "8px", color: "#fff" }}>{title}</h3>
-    <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.5)", marginBottom: "20px", flex: 1 }}>{desc}</p>
-    <Link to={link} style={{
-      display: "inline-block",
-      textAlign: "center",
-      padding: "10px 0",
-      borderRadius: "8px",
-      background: "rgba(0, 234, 255, 0.1)",
-      color: "#00eaff",
-      textDecoration: "none",
-      fontWeight: "600",
-      fontSize: "14px",
-      border: "1px solid rgba(0, 234, 255, 0.2)",
-      transition: "all 0.2s"
-    }}>
-      View Curriculum
-    </Link>
-  </div>
-);
-
-const Testimonial = ({ name, role, msg }) => (
-  <div style={{
-    background: "rgba(2, 6, 23, 0.8)",
-    padding: "24px",
-    borderRadius: "12px",
-    border: "1px solid rgba(255,255,255,0.05)"
-  }}>
-    <p style={{ fontSize: "15px", color: "rgba(255,255,255,0.8)", fontStyle: "italic", marginBottom: "16px" }}>“{msg}”</p>
-    <div>
-      <h4 style={{ fontSize: "14px", fontWeight: "700", color: "#fff" }}>{name}</h4>
-      <span style={{ fontSize: "12px", color: "#7b3fe4" }}>{role}</span>
-    </div>
-  </div>
+    <CardContent sx={{ p: 3 }}>
+      <Box sx={{ position: "absolute", right: 12, top: 12, fontSize: 11, fontWeight: 800, bgcolor: "rgba(0,234,255,0.08)", color: '#00eaff', py: 0.5, px: 1.5, borderRadius: 2 }}>
+        {tag}
+      </Box>
+      <Typography variant="h6" sx={{ mt: 1, fontWeight: 700 }}>{title}</Typography>
+      <Typography variant="body2" sx={{ opacity: 0.65, my: 1.5, minHeight: 40 }}>{desc}</Typography>
+      <Button
+        component={Link}
+        to={link}
+        endIcon={<ArrowForwardIcon />}
+        sx={{
+          color: "#00eaff",
+          fontWeight: 700,
+          p: 0,
+          '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' }
+        }}
+      >
+        View
+      </Button>
+    </CardContent>
+  </Card>
 );
 
 export default function HomePage() {
   const canvasRef = useRef(null);
+  const visible = useScrollAnimation();
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up('lg')); // Replaces manual resize listener
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [darkMode, setDarkMode] = useState(true);
 
-  // Particle Animation
+  // Minimal particle canvas preserved
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     let w = (canvas.width = window.innerWidth);
     let h = (canvas.height = window.innerHeight);
+    const particles = Array.from({ length: isMobile ? 30 : 60 }).map(() => ({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 2 + 0.6, vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4, a: Math.random() * 0.5 + 0.1 }));
 
-    const particles = [...Array(60)].map(() => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      r: Math.random() * 2 + 0.5,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
-      alpha: Math.random() * 0.5 + 0.1,
-    }));
-
-    const resize = () => {
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
-    };
-
+    const resize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; };
+    window.addEventListener("resize", resize);
     let raf;
-    const frame = () => {
+    const loop = () => {
       ctx.clearRect(0, 0, w, h);
-
-      // Draw Particles
       particles.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0) p.x = w;
-        if (p.x > w) p.x = 0;
-        if (p.y < 0) p.y = h;
-        if (p.y > h) p.y = 0;
-
-        ctx.beginPath();
-        ctx.globalAlpha = p.alpha;
-        ctx.fillStyle = "#00eaff";
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < -10) p.x = w + 10; if (p.x > w + 10) p.x = -10; if (p.y < -10) p.y = h + 10; if (p.y > h + 10) p.y = -10;
+        ctx.beginPath(); ctx.globalAlpha = p.a; ctx.fillStyle = "#00eaff"; ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
       });
       ctx.globalAlpha = 1;
-      raf = requestAnimationFrame(frame);
+      raf = requestAnimationFrame(loop);
     };
+    loop();
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
+  }, [isMobile]);
 
-    window.addEventListener("resize", resize);
-    frame();
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
+  const toggleTheme = () => setDarkMode(!darkMode);
 
   return (
-    <div style={{ position: "relative", background: "#020617", minHeight: "100vh", overflowX: "hidden" }}>
-      {/* BACKGROUND CANVAS */}
-      <canvas
-        ref={canvasRef}
-        style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 0 }}
-      />
+    <Box sx={{ position: "relative", minHeight: "100vh", bgcolor: darkMode ? "#060714" : "#fafafa", color: darkMode ? "#fff" : "#111", overflowX: "hidden" }}>
+      <canvas ref={canvasRef} style={{ position: "fixed", inset: 0, width: "100vw", height: "100vh", pointerEvents: "none", zIndex: 0 }} />
 
-      {/* HERO SECTION */}
-      <div style={{ position: "relative", zIndex: 1, paddingTop: "140px", paddingBottom: "80px", paddingLeft: "24px", paddingRight: "24px", maxWidth: "1280px", margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "60px", alignItems: "center" }}>
+      {/* Theme toggle - middle right */}
+      <IconButton
+        onClick={toggleTheme}
+        sx={{
+          position: "fixed",
+          right: 18,
+          top: "50%",
+          transform: "translateY(-50%)",
+          zIndex: 220,
+          width: 56,
+          height: 56,
+          bgcolor: darkMode ? "rgba(10,12,20,0.8)" : "#fff",
+          border: "2px solid rgba(255,255,255,0.06)",
+          color: darkMode ? '#fff' : '#000',
+          '&:hover': { bgcolor: darkMode ? "rgba(10,12,20,0.9)" : "#f5f5f5" }
+        }}
+        aria-label="toggle-theme"
+      >
+        {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+      </IconButton>
 
-          {/* LEFT CONTENT */}
-          <div>
-            <div style={{
-              display: "inline-block",
-              padding: "6px 16px",
-              borderRadius: "50px",
-              background: "rgba(0, 234, 255, 0.1)",
-              border: "1px solid rgba(0, 234, 255, 0.3)",
-              color: "#00eaff",
-              fontSize: "12px",
-              fontWeight: "700",
-              marginBottom: "24px",
-              letterSpacing: "0.5px"
-            }}>
-              🚀 PRODUCTION-READY DEVOPS
-            </div>
+      {/* HERO */}
+      <Box id="hero" data-scroll-animate sx={{ position: "relative", zIndex: 10, pt: { xs: 12, md: 16 }, pb: { xs: 8, md: 12 }, px: 2 }}>
+        <Container maxWidth="xl">
+          <Grid container spacing={6} alignItems="center">
+            {/* LEFT: Title, subtitle, CTA, stats */}
+            <Grid item xs={12} lg={6} sx={{ position: "relative", zIndex: 2 }}>
+              <Box sx={{ display: "inline-block", py: 1, px: 2, borderRadius: 999, bgcolor: "rgba(0,234,255,0.08)", color: "#00eaff", fontWeight: 800, mb: 3, fontSize: 13 }}>
+                PAHRIKYNS • PRO
+              </Box>
 
-            <h1 style={{
-              fontSize: "clamp(40px, 5vw, 64px)",
-              fontWeight: "900",
-              lineHeight: "1.1",
-              color: "#fff",
-              marginBottom: "24px"
-            }}>
-              Master DevOps <br />
-              <span style={{ color: "transparent", WebkitBackgroundClip: "text", background: "linear-gradient(90deg, #00eaff, #7b3fe4)" }}>
-                The Right Way.
-              </span>
-            </h1>
+              <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', sm: '3.5rem', md: '5rem', lg: '6rem' }, lineHeight: 1.02, fontWeight: 900 }}>
+                Learn the skills that get you hired
+              </Typography>
 
-            <p style={{ fontSize: "18px", color: "rgba(255,255,255,0.6)", marginBottom: "40px", maxWidth: "540px", lineHeight: "1.6" }}>
-              Stop watching tutorials. Start deploying real infrastructure.
-              Learn Linux, AWS, Docker, K8s & Terraform by doing it.
-            </p>
+              {/* Gradient accent bar */}
+              <Box sx={{ width: 120, height: 8, borderRadius: 8, mt: 3, background: "linear-gradient(90deg,#00eaff,#7b3fe4)", boxShadow: "0 8px 30px rgba(123,63,228,0.18)" }} />
 
-            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-              <Link to="/courses" style={{
-                padding: "16px 32px",
-                borderRadius: "12px",
-                background: "linear-gradient(90deg, #00eaff, #7b3fe4)",
-                color: "#black",
-                fontWeight: "800",
-                textDecoration: "none",
-                fontSize: "16px",
-                boxShadow: "0 0 20px rgba(0, 234, 255, 0.4)",
-                border: "none"
-              }}>
-                Start Learning Free
-              </Link>
-              <Link to="/courses/aws" style={{
-                padding: "16px 32px",
-                borderRadius: "12px",
-                background: "transparent",
-                color: "#fff",
-                fontWeight: "700",
-                textDecoration: "none",
-                fontSize: "16px",
-                border: "1px solid rgba(255,255,255,0.2)"
-              }}>
-                View AWS Track
-              </Link>
-            </div>
+              <Typography variant="body1" sx={{ maxWidth: 640, mt: 3, color: darkMode ? "rgba(255,255,255,0.78)" : "rgba(0,0,0,0.7)", fontSize: { xs: 16, md: 18 } }}>
+                Hands-on courses, real projects, and mentor support — everything you need to switch into a high-paying DevOps role.
+              </Typography>
 
-            <div style={{ marginTop: "60px", display: "flex", gap: "40px", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "30px" }}>
-              <AnimatedStat value="5000" label="Students" />
-              <AnimatedStat value="25" label="Real Projects" />
-              <AnimatedStat value="98" label="Success Rate" />
-            </div>
-          </div>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 4 }}>
+                <Button
+                  component={Link}
+                  to="/courses"
+                  variant="contained"
+                  sx={{
+                    py: 1.5,
+                    px: 4,
+                    borderRadius: 3,
+                    background: "linear-gradient(90deg,#00eaff,#7b3fe4)",
+                    color: "#000",
+                    fontWeight: 900,
+                    boxShadow: "0 12px 40px rgba(0,234,255,0.28)",
+                    '&:hover': { background: "linear-gradient(90deg,#00d1e5,#6a35c9)" }
+                  }}
+                >
+                  Start Learning Free
+                </Button>
+                <Button
+                  component={Link}
+                  to="/courses/aws"
+                  variant="outlined"
+                  sx={{
+                    py: 1.5,
+                    px: 4,
+                    borderRadius: 3,
+                    borderColor: "rgba(255,255,255,0.1)",
+                    color: darkMode ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.8)",
+                    fontWeight: 800,
+                    '&:hover': { borderColor: "rgba(255,255,255,0.3)", bgcolor: 'rgba(255,255,255,0.05)' }
+                  }}
+                >
+                  Explore Tracks
+                </Button>
+              </Stack>
 
-          {/* RIGHT CONTENT - JOURNEY CARD */}
-          <div style={{ display: "none", md: { display: "block" } }}> {/* Hidden on mobile, handled via CSS usually, but simple display here */}
-            <div style={{
-              background: "rgba(10, 15, 30, 0.6)",
-              backdropFilter: "blur(20px)",
-              border: "1px solid rgba(0, 234, 255, 0.2)",
-              borderRadius: "24px",
-              padding: "40px",
-              position: "relative",
-              boxShadow: "0 20px 50px rgba(0,0,0,0.5)"
-            }}>
-              <h3 style={{ fontSize: "24px", fontWeight: "800", color: "#fff", marginBottom: "30px" }}>Your Learning Path</h3>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                <li style={{ display: "flex", alignItems: "center", gap: "15px", marginBottom: "20px", color: "rgba(255,255,255,0.8)" }}>
-                  <span style={{ width: "32px", height: "32px", background: "rgba(0,234,255,0.1)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", color: "#00eaff" }}>1</span>
-                  Linux Fundamentals & Git
-                </li>
-                <li style={{ display: "flex", alignItems: "center", gap: "15px", marginBottom: "20px", color: "rgba(255,255,255,0.8)" }}>
-                  <span style={{ width: "32px", height: "32px", background: "rgba(0,234,255,0.1)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", color: "#00eaff" }}>2</span>
-                  AWS Cloud Infrastructure
-                </li>
-                <li style={{ display: "flex", alignItems: "center", gap: "15px", marginBottom: "20px", color: "rgba(255,255,255,0.8)" }}>
-                  <span style={{ width: "32px", height: "32px", background: "rgba(0,234,255,0.1)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", color: "#00eaff" }}>3</span>
-                  Docker Containerization
-                </li>
-                <li style={{ display: "flex", alignItems: "center", gap: "15px", marginTop: "30px", padding: "15px", background: "rgba(123, 63, 228, 0.1)", borderRadius: "12px", border: "1px solid #7b3fe4", color: "#fff", fontWeight: "700" }}>
-                  <span style={{ fontSize: "20px" }}>🚀</span>
-                  Master CI/CD Pipelines
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+              {/* Social Proof */}
+              <Stack direction="row" spacing={2} alignItems="center" sx={{ mt: 4 }}>
+                <AvatarGroup max={4} sx={{ '& .MuiAvatar-root': { width: 32, height: 32, fontSize: 12, borderColor: darkMode ? "#060714" : "#fff" } }}>
+                  <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                  <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
+                  <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
+                  <Avatar alt="Agnes Walker" src="/static/images/avatar/4.jpg" />
+                  <Avatar alt="Trevor Henderson" src="/static/images/avatar/5.jpg" />
+                </AvatarGroup>
+                <Box>
+                  <Stack direction="row" spacing={0.5} sx={{ color: "#fbbf24", mb: 0.5 }}>
+                    {[1, 2, 3, 4, 5].map((s) => <StarIcon key={s} sx={{ fontSize: 16 }} />)}
+                  </Stack>
+                  <Typography variant="caption" sx={{ color: darkMode ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)", fontWeight: 600 }}>
+                    Join <Box component="span" sx={{ color: darkMode ? "#fff" : "#000", fontWeight: 800 }}>5,000+ top engineers</Box>
+                  </Typography>
+                </Box>
+              </Stack>
 
-      {/* LOGOS SECTION */}
-      <div style={{ background: "rgba(255,255,255,0.02)", padding: "40px 0", borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 24px" }}>
-          <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", fontSize: "14px", marginBottom: "24px", letterSpacing: "1px", textTransform: "uppercase" }}>Trusted by engineers at</p>
-          <div style={{ display: "flex", justifyContent: "center", gap: "60px", flexWrap: "wrap", alignItems: "center", opacity: 0.6 }}>
-            {[infosys, tcs, wipro, accenture, amazon, zoho].map((logo, i) => (
-              <img key={i} src={logo} alt="Company Logo" style={{ height: "35px", filter: "grayscale(100%)", transition: "filter 0.3s" }}
-                onMouseEnter={(e) => e.target.style.filter = "grayscale(0%)"}
-                onMouseLeave={(e) => e.target.style.filter = "grayscale(100%)"}
-              />
+              <Stack direction="row" spacing={4} sx={{ mt: 6, alignItems: "flex-end" }}>
+                <AnimatedStat value={"5000"} label="Students" />
+                <AnimatedStat value={"350"} label="Projects" />
+                <AnimatedStat value={"95"} label="Placement" />
+              </Stack>
+            </Grid>
+
+            {/* RIGHT: Artwork / promotional artwork */}
+            {isDesktop && (
+              <Grid item xs={12} lg={6} sx={{ position: 'relative' }}>
+                <Box sx={{ position: "relative", height: 520 }}>
+                  <Box sx={{
+                    position: "absolute", right: 0, top: 0, width: "100%", height: "100%", borderRadius: 6, overflow: "hidden",
+                    boxShadow: "0 30px 80px rgba(0,0,0,0.35)",
+                    background: "linear-gradient(135deg,#667eea 0%,#764ba2 35%,#f093fb 70%,#00f2fe 100%)",
+                    display: "flex", alignItems: "center", justifyContent: "center"
+                  }}>
+                    <Typography sx={{ color: "rgba(255,255,255,0.95)", fontSize: 110 }}>🎨</Typography>
+                  </Box>
+                </Box>
+
+
+                {/* Floating promo card removed */}
+              </Grid>
+            )}
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Features */}
+      <Container maxWidth="lg" id="features" data-scroll-animate sx={{ py: 8 }}>
+        <Box sx={{ textAlign: "center", mb: 6 }}>
+          <Typography variant="h3" sx={{ fontWeight: 800 }}>Why PAHRIKYNS?</Typography>
+          <Typography variant="subtitle1" sx={{ mt: 1, opacity: 0.65 }}>Project-based curriculum, mentors & hiring support.</Typography>
+        </Box>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Feature icon="📘" title="Structured Paths" desc="From beginner to job-ready with a clear map." />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Feature icon="🧪" title="Hands-on Labs" desc="Real infra, real projects, no simulators." />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Feature icon="🤝" title="Mentorship" desc="Weekly mentor sessions and code reviews." />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Feature icon="💼" title="Placement Help" desc="Resume + mock interviews + referrals." />
+          </Grid>
+        </Grid>
+      </Container>
+
+      {/* Logos */}
+      <Box sx={{ py: 4, borderTop: "1px solid rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
+        <Container maxWidth="lg" sx={{ textAlign: "center" }}>
+          <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.45)", textTransform: "uppercase", letterSpacing: 1, display: 'block', mb: 3 }}>
+            Trusted by teams at
+          </Typography>
+          <Stack direction="row" spacing={4} justifyContent="center" flexWrap="wrap" useFlexGap sx={{ opacity: 0.7 }}>
+            {[infosys, tcs, wipro, accenture, amazon, zoho].map((l, i) => (
+              <Box component="img" key={i} src={l} alt="logo" sx={{ height: { xs: 24, md: 36 }, filter: "grayscale(100%)", opacity: 0.8, transition: 'opacity 0.2s', '&:hover': { opacity: 1 } }} />
             ))}
-          </div>
-        </div>
-      </div>
+          </Stack>
+        </Container>
+      </Box>
 
-      {/* FEATURES SECTION */}
-      <div style={{ padding: "100px 24px", maxWidth: "1280px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-        <div style={{ textAlign: "center", marginBottom: "60px" }}>
-          <h2 style={{ fontSize: "36px", fontWeight: "800", color: "#fff", marginBottom: "16px" }}>Why PAHRIKYNS?</h2>
-          <p style={{ color: "rgba(255,255,255,0.5)" }}>We don't just teach tools. We teach workflows.</p>
-        </div>
+      {/* Courses */}
+      <Container maxWidth="lg" id="courses" data-scroll-animate sx={{ py: 8 }}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 800 }}>Popular Tracks</Typography>
+            <Typography variant="body2" sx={{ opacity: 0.65 }}>Choose a career path.</Typography>
+          </Box>
+          <Button component={Link} to="/courses" endIcon={<ArrowForwardIcon />} sx={{ color: "#00eaff", fontWeight: 800 }}>
+            View All
+          </Button>
+        </Stack>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }}>
-          <Feature icon="📘" title="Structured Learning" desc="No random tutorials. A complete path from Zero to Hero in DevOps." />
-          <Feature icon="⚡" title="Real-World Labs" desc="Practice on real servers, not just in the browser. Production simulations." />
-          <Feature icon="🤝" title="1 : 1 Mentorship" desc="Get stuck? Our mentors hop on a call to unblock you instantly." />
-          <Feature icon="💼" title="Job Assistance" desc="Resume building, mock interviews, and referrals to top companies." />
-        </div>
-      </div>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={3}>
+            <CourseCard title="AWS DevOps Master" desc="EC2, S3, VPC, IAM & CI/CD" link="/courses/aws" tag="BEST" />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <CourseCard title="Linux & Scripting" desc="Command line, bash & automation" link="/courses/linux" tag="CORE" />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <CourseCard title="Kubernetes" desc="Deploy microservices on K8s" link="/courses/kubernetes" tag="PRO" />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <CourseCard title="CI/CD" desc="Jenkins, GitHub Actions" link="/courses/ci" tag="PRACTICAL" />
+          </Grid>
+        </Grid>
+      </Container>
 
-      {/* TRACKS SECTION */}
-      <div style={{ background: "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0, 234, 255, 0.05) 100%)", padding: "100px 24px", position: "relative", zIndex: 1 }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "end", marginBottom: "50px" }}>
-            <div>
-              <h2 style={{ fontSize: "36px", fontWeight: "800", color: "#fff", marginBottom: "10px" }}>Popular Tracks</h2>
-              <p style={{ color: "rgba(255,255,255,0.5)" }}>Choose your specialization.</p>
-            </div>
-            <Link to="/courses" style={{ color: "#00eaff", textDecoration: "none", fontWeight: "700" }}>View All Courses →</Link>
-          </div>
+      {/* Call to action */}
+      <Box id="cta" sx={{ py: 10, textAlign: "center", position: 'relative', overflow: 'hidden' }}>
+        <Box sx={{ position: 'relative', zIndex: 2 }}>
+          <Typography variant="h3" sx={{ fontWeight: 900, mb: 1 }}>Ready to switch careers?</Typography>
+          <Typography variant="subtitle1" sx={{ opacity: 0.65, mb: 4 }}>Start with free lessons and see the learning path.</Typography>
+          <Button
+            component={Link}
+            to="/register"
+            variant="contained"
+            size="large"
+            sx={{
+              py: 1.5,
+              px: 6,
+              borderRadius: 999,
+              background: "linear-gradient(90deg,#00eaff,#7b3fe4)",
+              color: "#000",
+              fontWeight: 900,
+              fontSize: '1.1rem',
+              boxShadow: "0 10px 40px rgba(123,63,228,0.4)"
+            }}
+          >
+            Join Now
+          </Button>
+        </Box>
+      </Box>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }}>
-            <CourseCard title="AWS DevOps Master" desc="Complete EC2, S3, VPC, IAM & CI/CD with AWS CodePipeline." link="/courses/aws" tag="BESTSELLER" />
-            <CourseCard title="Linux & Shell" desc="Master the command line. Scripting, permissions, networking & init systems." link="/courses/linux" tag="FRESHER FRIENDLY" />
-            <CourseCard title="Kubernetes Pro" desc="Deploy microservices on K8s. Helm, Prometheus, Grafana & GitOps." link="/courses/kubernetes" tag="ADVANCED" />
-            <CourseCard title="The Complete CI/CD" desc="Jenkins, GitLab CI, GitHub Actions. Automate everything." link="/courses/devops" tag="CAREER READY" />
-          </div>
-        </div>
-      </div>
-
-      {/* CTA FOOTER */}
-      <div style={{ padding: "100px 24px", maxWidth: "800px", margin: "0 auto", textAlign: "center", position: "relative", zIndex: 1 }}>
-        <h2 style={{ fontSize: "42px", fontWeight: "900", color: "#fff", marginBottom: "20px" }}>
-          Ready to launch your career?
-        </h2>
-        <p style={{ fontSize: "18px", color: "rgba(255,255,255,0.6)", marginBottom: "40px" }}>
-          Join 5000+ engineers who switched to high-paying DevOps roles.
-        </p>
-        <Link to="/register" style={{
-          padding: "18px 48px",
-          borderRadius: "100px",
-          background: "linear-gradient(90deg, #00eaff, #7b3fe4)",
-          color: "#000",
-          fontWeight: "800",
-          textDecoration: "none",
-          fontSize: "18px",
-          display: "inline-block",
-          boxShadow: "0 0 40px rgba(0, 234, 255, 0.5)",
-          transition: "transform 0.2s"
-        }}>
-          Join PAHRIKYNS Now
-        </Link>
-      </div>
-
-    </div>
+    </Box>
   );
 }

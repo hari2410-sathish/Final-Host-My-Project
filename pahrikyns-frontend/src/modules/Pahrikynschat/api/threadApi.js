@@ -20,13 +20,3 @@ export const listenReplies = (parentId, cb) => {
   });
 };
 
-// /modules/Pahrikynschat/api/readReceiptApi.js
-import api from "./chatApi";
-
-export const markChannelRead = (channelId) => {
-  return api.post(`/channels/${channelId}/read`);
-};
-
-export const markMessageRead = (messageId) => {
-  return api.post(`/messages/${messageId}/read`);
-};

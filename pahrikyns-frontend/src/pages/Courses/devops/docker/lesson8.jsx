@@ -10,9 +10,12 @@
 };
 
 // Optional images
-import DockerSecArch from "../../../../assets/docker/docker-security-architecture.png";
-import DockerCaps from "../../../../assets/docker/docker-capabilities.png";
-import DockerSeccomp from "../../../../assets/docker/docker-seccomp.png";
+// import DockerSecArch from "../../../../assets/docker/docker-security-architecture.png";
+const DockerSecArch = "";
+// import DockerCaps from "../../../../assets/docker/docker-capabilities.png";
+// import DockerSeccomp from "../../../../assets/docker/docker-seccomp.png";
+const DockerCaps = "";
+const DockerSeccomp = "";
 
 export default function Lesson8() {
   const { langKey } = useLanguage();
@@ -51,7 +54,7 @@ export default function Lesson8() {
       </ul>
 
       <pre style={pre}>
-{`docker run --pid=host ubuntu ps aux   # shares host PID namespace
+        {`docker run --pid=host ubuntu ps aux   # shares host PID namespace
 docker run --network=none nginx        # isolates network completely`}
       </pre>
 
@@ -65,7 +68,7 @@ docker run --network=none nginx        # isolates network completely`}
       <p>Cgroups prevent a container from abusing host CPU, memory, I/O.</p>
 
       <pre style={pre}>
-{`docker run -m 512m --cpus=0.5 nginx
+        {`docker run -m 512m --cpus=0.5 nginx
 docker run --memory="1g" --pids-limit=100 ubuntu`}
       </pre>
 
@@ -81,7 +84,7 @@ docker run --memory="1g" --pids-limit=100 ubuntu`}
       </p>
 
       <pre style={pre}>
-{`docker run --cap-drop ALL --cap-add NET_BIND_SERVICE nginx`}
+        {`docker run --cap-drop ALL --cap-add NET_BIND_SERVICE nginx`}
       </pre>
 
       <p>Common dangerous capabilities to DROP:</p>
@@ -104,13 +107,13 @@ docker run --memory="1g" --pids-limit=100 ubuntu`}
       </p>
 
       <pre style={pre}>
-{`docker run --security-opt seccomp=default.json nginx`}
+        {`docker run --security-opt seccomp=default.json nginx`}
       </pre>
 
       <p>To use a custom seccomp:</p>
 
       <pre style={pre}>
-{`docker run --security-opt seccomp=seccomp-custom.json ubuntu`}
+        {`docker run --security-opt seccomp=seccomp-custom.json ubuntu`}
       </pre>
 
       <div style={note}>
@@ -125,7 +128,7 @@ docker run --memory="1g" --pids-limit=100 ubuntu`}
       </p>
 
       <pre style={pre}>
-{`docker run --security-opt apparmor=docker-default ubuntu`}
+        {`docker run --security-opt apparmor=docker-default ubuntu`}
       </pre>
 
       <p>Create custom AppArmor profile to enforce read-only paths.</p>
@@ -138,7 +141,7 @@ docker run --memory="1g" --pids-limit=100 ubuntu`}
       </p>
 
       <pre style={pre}>
-{`docker run -v /data:/data:Z nginx
+        {`docker run -v /data:/data:Z nginx
 docker run -v /shared:/shared:ro,Z ubuntu`}
       </pre>
 
@@ -152,7 +155,7 @@ docker run -v /shared:/shared:ro,Z ubuntu`}
       <p>Make filesystem immutable:</p>
 
       <pre style={pre}>
-{`docker run --read-only -v /cache nginx`}
+        {`docker run --read-only -v /cache nginx`}
       </pre>
 
       <ul>
@@ -166,7 +169,7 @@ docker run -v /shared:/shared:ro,Z ubuntu`}
       <p>Enable in daemon:</p>
 
       <pre style={pre}>
-{`{
+        {`{
   "userns-remap": "default"
 }`}
       </pre>
@@ -183,7 +186,7 @@ docker run -v /shared:/shared:ro,Z ubuntu`}
       <p>Docker can run entirely rootless.</p>
 
       <pre style={pre}>
-{`dockerd-rootless-setuptool.sh install`}
+        {`dockerd-rootless-setuptool.sh install`}
       </pre>
 
       <p>Rootless mode:</p>
@@ -201,13 +204,13 @@ docker run -v /shared:/shared:ro,Z ubuntu`}
       <h3>Use Docker Secrets (Swarm mode)</h3>
 
       <pre style={pre}>
-{`echo "mypassword" | docker secret create db_pass -`}
+        {`echo "mypassword" | docker secret create db_pass -`}
       </pre>
 
       <p>Then:</p>
 
       <pre style={pre}>
-{`services:
+        {`services:
   app:
     secrets:
       - db_pass`}
@@ -216,7 +219,7 @@ docker run -v /shared:/shared:ro,Z ubuntu`}
       <h3>Compose alternative: mounted files</h3>
 
       <pre style={pre}>
-{`volumes:
+        {`volumes:
   - ./secrets/db_pass:/run/secrets/db_pass:ro`}
       </pre>
 
@@ -228,7 +231,7 @@ docker run -v /shared:/shared:ro,Z ubuntu`}
       <h2>1️⃣1️⃣ Secure Dockerfiles (Best Practices)</h2>
 
       <pre style={pre}>
-{`FROM node:18-alpine
+        {`FROM node:18-alpine
 
 USER node
 
@@ -252,7 +255,7 @@ CMD ["node","server.js"]`}
       <h2>1️⃣2️⃣ Scan Docker images for vulnerabilities</h2>
 
       <pre style={pre}>
-{`trivy image myapp:latest
+        {`trivy image myapp:latest
 grype myapp:latest`}
       </pre>
 
@@ -262,7 +265,7 @@ grype myapp:latest`}
       <h2>1️⃣3️⃣ Image Signing & Verification (Cosign / Notary)</h2>
 
       <pre style={pre}>
-{`cosign generate-key-pair
+        {`cosign generate-key-pair
 cosign sign --key cosign.key registry/app:1.0
 cosign verify --key cosign.pub registry/app:1.0`}
       </pre>
@@ -285,7 +288,7 @@ cosign verify --key cosign.pub registry/app:1.0`}
       <p>Use rootless, or limit access with:</p>
 
       <pre style={pre}>
-{`sudo usermod -aG docker <username>`}
+        {`sudo usermod -aG docker <username>`}
       </pre>
 
       {/* SECTION 15 */}
@@ -299,7 +302,7 @@ cosign verify --key cosign.pub registry/app:1.0`}
       </ul>
 
       <pre style={pre}>
-{`docker network create --internal private_net`}
+        {`docker network create --internal private_net`}
       </pre>
 
       <p>No external internet access!</p>
@@ -308,14 +311,14 @@ cosign verify --key cosign.pub registry/app:1.0`}
       <h2>1️⃣6️⃣ Rate limiting to prevent DoS</h2>
 
       <pre style={pre}>
-{`docker run --cpus="0.5" --memory="256m" --memory-swap="256m" nginx`}
+        {`docker run --cpus="0.5" --memory="256m" --memory-swap="256m" nginx`}
       </pre>
 
       {/* SECTION 17 */}
       <h2>1️⃣7️⃣ Read-only root filesystem + tmpfs</h2>
 
       <pre style={pre}>
-{`docker run \
+        {`docker run \
   --read-only \
   --tmpfs /tmp \
   nginx`}
@@ -343,14 +346,14 @@ cosign verify --key cosign.pub registry/app:1.0`}
       </ul>
 
       <pre style={pre}>
-{`FROM python@sha256:123455123...`}
+        {`FROM python@sha256:123455123...`}
       </pre>
 
       {/* SECTION 20 */}
       <h2>2️⃣0️⃣ Docker Daemon Hardening</h2>
 
       <pre style={pre}>
-{`{
+        {`{
   "icc": false,
   "no-new-privileges": true,
   "userns-remap": "default"
@@ -358,7 +361,7 @@ cosign verify --key cosign.pub registry/app:1.0`}
       </pre>
 
       <p>
-        <strong>icc=false</strong> → disable inter-container communication.  
+        <strong>icc=false</strong> → disable inter-container communication.
         <strong>no-new-privileges=true</strong> → prevents escalation via setuid.
       </p>
 
@@ -373,7 +376,7 @@ cosign verify --key cosign.pub registry/app:1.0`}
       </ul>
 
       <pre style={pre}>
-{`falco -r rules.yaml`}
+        {`falco -r rules.yaml`}
       </pre>
 
       {/* SECTION 22 */}
@@ -410,12 +413,12 @@ cosign verify --key cosign.pub registry/app:1.0`}
       <h2>✔ Conclusion</h2>
 
       <p>
-        You now understand the entire security model of Docker.  
+        You now understand the entire security model of Docker.
         Next level: Docker Swarm & Kubernetes security, image trust pipeline, and runtime threat detection.
       </p>
 
       <div style={info}>
-        Ready for **Lesson 9 (Docker Storage Deep Dive)**?  
+        Ready for **Lesson 9 (Docker Storage Deep Dive)**?
         Say: &nbsp;<strong>“Lesson 9 Start”</strong>
       </div>
     </div>

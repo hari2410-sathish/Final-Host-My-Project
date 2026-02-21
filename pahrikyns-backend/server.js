@@ -3,6 +3,12 @@
 // =======================================
 
 require("dotenv").config();
+const validateEnvironment = require("./src/config/envValidator");
+
+// ============================
+// VALIDATE ENVIRONMENT
+// ============================
+validateEnvironment();
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -10,6 +16,7 @@ const session = require("express-session");
 const http = require("http");
 const jwt = require("jsonwebtoken");
 const { Server } = require("socket.io");
+const helmet = require("helmet");
 
 // ============================
 // ROUTES
@@ -41,6 +48,11 @@ app.use(
 app.options("*", cors());
 
 // ============================
+// SECURITY HEADERS (Helmet)
+// ============================
+app.use(helmet());
+
+// ============================
 // BODY PARSERS
 // ============================
 app.use(express.json());
@@ -62,8 +74,8 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000,
     },
   })

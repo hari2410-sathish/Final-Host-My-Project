@@ -49,14 +49,14 @@ export default function Lesson13() {
       {/* ARCHITECTURE */}
       <h2>🔷 Architecture of This Project</h2>
       <pre>
-Control Node (Ansible Installed)
+        Control Node (Ansible Installed)
         |
         |
         SSH
         |
         |
-Managed Node (Linux Server)
-(Nginx + Docker will be installed)
+        Managed Node (Linux Server)
+        (Nginx + Docker will be installed)
       </pre>
 
       <ul>
@@ -72,13 +72,13 @@ Managed Node (Linux Server)
       <p>Create a file called <b>inventory</b></p>
 
       <pre>
-[web]
-192.168.1.10 ansible_user=ubuntu
+        [web]
+        192.168.1.10 ansible_user=ubuntu
       </pre>
 
       <p>
-        ✅ This means:  
-        One server is grouped under <b>web</b> group  
+        ✅ This means:
+        One server is grouped under <b>web</b> group
       </p>
 
       <hr />
@@ -87,7 +87,7 @@ Managed Node (Linux Server)
       <h2>✅ Step 2: Verify Connection (Ad-hoc)</h2>
 
       <pre>
-ansible web -i inventory -m ping
+        ansible web -i inventory -m ping
       </pre>
 
       <p>
@@ -95,7 +95,7 @@ ansible web -i inventory -m ping
       </p>
 
       <pre>
-SUCCESS => ping: pong
+        SUCCESS =&gt; ping: pong
       </pre>
 
       <p>
@@ -109,35 +109,35 @@ SUCCESS => ping: pong
       <p>Create a file: <b>project1.yml</b></p>
 
       <pre>
----
-- name: Real World Project 1 - Single Server Automation
-  hosts: web
-  become: yes
+        ---
+        - name: Real World Project 1 - Single Server Automation
+        hosts: web
+        become: yes
 
-  tasks:
+        tasks:
 
-    - name: Update package cache
-      apt:
+        - name: Update package cache
+        apt:
         update_cache: yes
 
-    - name: Install Nginx
-      apt:
+        - name: Install Nginx
+        apt:
         name: nginx
         state: present
 
-    - name: Install Docker
-      apt:
+        - name: Install Docker
+        apt:
         name: docker.io
         state: present
 
-    - name: Start Nginx service
-      service:
+        - name: Start Nginx service
+        service:
         name: nginx
         state: started
         enabled: yes
 
-    - name: Start Docker service
-      service:
+        - name: Start Docker service
+        service:
         name: docker
         state: started
         enabled: yes
@@ -160,7 +160,7 @@ SUCCESS => ping: pong
       <h2>✅ Step 4: Run the Playbook</h2>
 
       <pre>
-ansible-playbook -i inventory project1.yml
+        ansible-playbook -i inventory project1.yml
       </pre>
 
       <p>
@@ -174,10 +174,10 @@ ansible-playbook -i inventory project1.yml
       <h2>✅ Step 5: Verify Using Ad-hoc Commands</h2>
 
       <pre>
-ansible web -i inventory -a "nginx -v"
-ansible web -i inventory -a "docker --version"
-ansible web -i inventory -a "systemctl status nginx"
-ansible web -i inventory -a "systemctl status docker"
+        ansible web -i inventory -a "nginx -v"
+        ansible web -i inventory -a "docker --version"
+        ansible web -i inventory -a "systemctl status nginx"
+        ansible web -i inventory -a "systemctl status docker"
       </pre>
 
       <p>

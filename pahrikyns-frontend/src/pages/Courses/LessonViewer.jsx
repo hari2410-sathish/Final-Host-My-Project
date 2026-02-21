@@ -28,41 +28,60 @@ export default function LessonViewer() {
   useEffect(() => {
     async function protect() {
       try {
-        // 1️⃣ Get course info
-        const { data: course } = await axios.get(`/courses/${tool}`);
+        // Parse lesson number (e.g., "lesson1" -> 1)
+        const lessonNum = parseInt(lessonId.replace("lesson", ""), 10);
 
-        // 2️⃣ Free Course
-        if (course.price === 0) {
+        // ✅ 1. Lesson 1 is FREE & PUBLIC
+        if (lessonNum === 1) {
+          setCheckingAccess(false);
+          return;
+        }
+
+        // 🔒 2. Lesson 2 requires LOGIN (but no subscription)
+        if (lessonNum === 2) {
           if (!user) {
-            navigate("/login");
+            // Redirect to login, but remember where they were
+            navigate("/login?redirect=" + encodeURIComponent(`/courses/${category}/${tool}/${lessonId}`));
             return;
           }
           setCheckingAccess(false);
           return;
         }
 
-        // 3️⃣ Intermediate / Advanced → must login
+        // 💰 3. Lesson 3+ requires SUBSCRIPTION (Paid)
+        // If not logged in, go to login
         if (!user) {
-          navigate("/login");
+          navigate("/login?redirect=" + encodeURIComponent(`/courses/${category}/${tool}/${lessonId}`));
           return;
         }
 
-        // 4️⃣ Check paid access
+        // Get course info to check price/access
+        const { data: course } = await axios.get(`/courses/${tool}`);
+
+        // If course is free (price 0), allow access
+        if (course.price === 0) {
+          setCheckingAccess(false);
+          return;
+        }
+
+        // Check if user has paid access
         const { data } = await axios.get(`/courses/${course.id}/access`);
         if (!data.access) {
-          navigate(`/courses/${course.id}`);
+          // No access? Redirect to course home page to buy
+          navigate(`/courses/${category}/${tool}`);
           return;
         }
 
         setCheckingAccess(false);
       } catch (err) {
-        console.error(err);
-        navigate(-1);
+        console.error("Access protection error:", err);
+        // Fallback: redirects to course home if something fails
+        navigate(`/courses/${category}/${tool}`);
       }
     }
 
     protect();
-  }, [tool, user, navigate]);
+  }, [tool, category, lessonId, user, navigate]);
 
   // ---------------- PROGRESS STORAGE ----------------
   const readProgress = (num) => {

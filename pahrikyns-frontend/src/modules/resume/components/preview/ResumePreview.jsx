@@ -1,13 +1,12 @@
 import React from "react";
 import { Box } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
-import { getTemplateComponent } from "../../templates/templateRegistry";
+import { getTemplateById } from "../../templates/templateRegistry";
 import { useResume } from "../../context/ResumeContext";
 
 /** ========================================================
- * RESUME PREVIEW — PRO VERSION (v1)
- * Loads correct template dynamically
- * Live preview engine for all templates
+ * RESUME PREVIEW — PRO VERSION (v2)
+ * Loads correct template dynamically with config
  * ======================================================== */
 
 export default function ResumePreview({ readOnly = false }) {
@@ -17,15 +16,16 @@ export default function ResumePreview({ readOnly = false }) {
   // Default template if none selected
   const templateId = params.get("template") || "free-01";
 
-  const Template = getTemplateComponent(templateId);
+  const template = getTemplateById(templateId);
+  const TemplateComponent = template?.component;
 
-  if (!Template) {
+  if (!TemplateComponent) {
     return <p className="text-red-600">Template not found.</p>;
   }
 
   return (
     <Box className="w-full">
-      <Template readOnly={readOnly} />
+      <TemplateComponent readOnly={readOnly} config={template.config} />
     </Box>
   );
 }
