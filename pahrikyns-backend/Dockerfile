@@ -3,10 +3,10 @@ FROM node:20-bullseye
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm install --no-audit --no-fund
 
 COPY . .
 
 EXPOSE 5000
 
-CMD ["sh", "-c", "npx prisma generate && node server.js"]
+CMD ["node", "server.js"]
