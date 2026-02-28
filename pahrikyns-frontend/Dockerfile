@@ -1,18 +1,20 @@
-# step 1: build stage
-From node:20 AS builder
+# ---------- Build stage ----------
+FROM node:20-alpine AS builder
+
 WORKDIR /app
-# package file copy
-COPY Package*.json ./
-# Dependencies install
+
+COPY package*.json ./
 RUN npm install
-# Source code copy
-Copy . .
-# Vite build
-Run npm run build
-FROM http:2.4-alpine
-RUN rm -rf /usr/local/apache2/htdocs/*
-COPY --from=builder /app/dist/ /usr/local/apache2/htdocs/
-#port expose (vite default)
+
+COPY . .
+RUN npm run build
+
+# ---------- Production stage ----------
+FROM nginx:alpine
+
+RUN rm -rf /usr/share/nginx/html/*
+COPY --from=builder /app/dist /usr/share/nginx/html
+
 EXPOSE 80
-# app start command
-CMD [ "npm", "run", "dev"]
+
+CMD ["nginx", "-g", "daemon off;"]
