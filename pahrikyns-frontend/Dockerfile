@@ -1,19 +1,14 @@
 # step 1: build stage
-From node:20
+From node:20 AS builder
 WORKDIR /app
-
 # package file copy
 COPY Package*.json ./
-
 # Dependencies install
 RUN npm install
-
 # Source code copy
 Copy . .
-
 # Vite build
 Run npm run build
-
 FROM http:2.4-alpine
 RUN rm -rf /usr/local/apache2/htdocs/*
 COPY --from=builder /app/dist/ /usr/local/apache2/htdocs/
