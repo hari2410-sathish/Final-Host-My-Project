@@ -1,5 +1,5 @@
 # step 1: build stage
-From node:18-alpine AS builder
+From node:20
 WORKDIR /app
 
 # package file copy
