@@ -25,6 +25,7 @@ services:
       - ./pahrikyns-backend/.env
     depends_on:
       - db
+    command: sh -c "npx prisma generate && node server.js"  
     restart: unless-stopped
 
   frontend:
