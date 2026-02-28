@@ -7,8 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// ///////////////////////
-/// ///////////////////////
+///////////////////////
+///////////////////////
 model Admin {
   id         String   @id @default(uuid())
   email      String   @unique
@@ -19,8 +19,8 @@ model Admin {
   createdAt  DateTime @default(now())
 }
 
-/// ///////////////////////
-/// ///////////////////////
+///////////////////////
+///////////////////////
 model OtpStore {
   id        String   @id @default(uuid())
   email     String
@@ -33,8 +33,8 @@ model OtpStore {
   @@index([email])
 }
 
-/// ///////////////////////
-/// ///////////////////////
+///////////////////////
+///////////////////////
 model User {
   id            String         @id @default(uuid())
   name          String
@@ -44,19 +44,21 @@ model User {
   createdAt     DateTime       @default(now())
   role          String         @default("student")
   avatar        String?
+  lastLoginAt   DateTime?
+  lastLoginIp   String?
+  lastDevice    String?
+
+  // relations
   fcmTokens     FcmToken[]
   notifications Notification[]
   payments      Payment[]
   subscription  Subscription?
   progress      UserProgress[]
-  lastLoginAt   DateTime?
-  lastLoginIp   String?
-  lastDevice    String?
-
+  userCourses   UserCourse[]   // ✅ FIXED (back relation)
 }
 
-/// ///////////////////////
-/// ///////////////////////
+///////////////////////
+///////////////////////
 model TempUser {
   email     String   @id
   name      String
@@ -64,8 +66,8 @@ model TempUser {
   createdAt DateTime @default(now())
 }
 
-/// ///////////////////////
-/// ///////////////////////
+///////////////////////
+///////////////////////
 model Student {
   id        String   @id @default(uuid())
   name      String
@@ -76,24 +78,25 @@ model Student {
   createdAt DateTime @default(now())
 }
 
-/// ///////////////////////
-/// ///////////////////////
+///////////////////////
+///////////////////////
 model Notification {
   id        String   @id @default(uuid())
   userId    String?
   title     String
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
   message   String
   type      String   @default("system")
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
   user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([type])
 }
 
-/// ///////////////////////
-/// ///////////////////////
+///////////////////////
+///////////////////////
 model Payment {
   id                String   @id @default(uuid())
   userId            String
@@ -101,16 +104,17 @@ model Payment {
   currency          String   @default("INR")
   status            String   @default("PENDING")
   razorpayOrderId   String?
-  createdAt         DateTime @default(now())
   razorpayPaymentId String?
   razorpaySignature String?
   orderId           String?
-  order             Order?   @relation(fields: [orderId], references: [id])
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order  Order? @relation(fields: [orderId], references: [id])
 }
 
-/// ///////////////////////
-/// ///////////////////////
+///////////////////////
+///////////////////////
 model Subscription {
   id            String    @id @default(uuid())
   userId        String    @unique
@@ -119,11 +123,12 @@ model Subscription {
   lastPaymentId String?
   expiresAt     DateTime?
   createdAt     DateTime  @default(now())
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-/// ///////////////////////
-/// ///////////////////////
+///////////////////////
+///////////////////////
 model Course {
   id            String         @id @default(uuid())
   title         String
@@ -137,14 +142,17 @@ model Course {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   lastUpdatedBy String?
+
+  // relations
   progress      UserProgress[]
+  userCourses   UserCourse[]   // ✅ FIXED (back relation)
 
   @@index([category])
   @@index([status])
 }
 
-/// ///////////////////////
-/// ///////////////////////
+///////////////////////
+///////////////////////
 model UserProgress {
   id        String   @id @default(uuid())
   userId    String
@@ -152,27 +160,29 @@ model UserProgress {
   lessonId  String
   completed Boolean  @default(false)
   createdAt DateTime @default(now())
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId, lessonId])
 }
 
-/// ///////////////////////
-/// ///////////////////////
+///////////////////////
+///////////////////////
 model FcmToken {
   id        String   @id @default(uuid())
   userId    String
   token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
 
-/// ///////////////////////
-/// ///////////////////////
+///////////////////////
+///////////////////////
 model Order {
   id            String      @id @default(uuid())
   customerType  String
@@ -189,21 +199,25 @@ model Order {
   invoiceNumber String?     @unique
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
-  items         OrderItem[]
-  payments      Payment[]
+
+  items    OrderItem[]
+  payments Payment[]
 }
 
-/// ///////////////////////
-/// ///////////////////////
+///////////////////////
+///////////////////////
 model OrderItem {
   id       String @id @default(uuid())
   orderId  String
   product  String
   quantity Int
   price    Float
-  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
+///////////////////////
+///////////////////////
 model EmailQueue {
   id         String   @id @default(uuid())
   to         String
@@ -217,6 +231,8 @@ model EmailQueue {
   updatedAt  DateTime @updatedAt
 }
 
+///////////////////////
+///////////////////////
 model UserCourse {
   id        String   @id @default(uuid())
   userId    String
