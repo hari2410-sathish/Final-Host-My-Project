@@ -1,14 +1,14 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: import.meta.env.VITE_API_URL, // ✅ IMPORTANT
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// 🔐 Auto attach token (FIXED)
+// 🔐 Auto attach token
 API.interceptors.request.use((config) => {
   const url = config.url || "";
 
@@ -24,17 +24,18 @@ API.interceptors.request.use((config) => {
   }
 
   // ===============================
-  // USER ROUTES → USER TOKEN ONLY
+  // USER ROUTES → USER TOKEN
   // ===============================
-  // ===============================
-  // USER ROUTES & PAYMENTS → USER TOKEN
-  // ===============================
-  if (url.startsWith("/auth/user") || url.startsWith("/payments") || url.startsWith("/courses") || url.startsWith("/api/notifications")) {
+  if (
+    url.startsWith("/auth/user") ||
+    url.startsWith("/payments") ||
+    url.startsWith("/courses") ||
+    url.startsWith("/api/notifications")
+  ) {
     const userToken = localStorage.getItem("USER_TOKEN");
     if (userToken) {
       config.headers.Authorization = `Bearer ${userToken}`;
     }
-    return config;
   }
 
   return config;
