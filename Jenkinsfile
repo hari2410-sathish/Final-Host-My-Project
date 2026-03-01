@@ -9,6 +9,17 @@ pipeline {
             }
         }
 
+        stage('Prepare env file') {
+            steps {
+                sh '''
+                if [ ! -f pahrikyns-backend/.env ]; then
+                  echo ".env file missing ❌"
+                  exit 1
+                fi
+                '''
+            }
+        }
+
         stage('Build and Deploy with Docker') {
             steps {
                 sh 'docker-compose down || true'
