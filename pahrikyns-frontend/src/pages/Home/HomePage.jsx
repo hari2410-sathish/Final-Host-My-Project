@@ -120,7 +120,7 @@ const CourseCard = ({ title, desc, link, tag }) => (
           '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' }
         }}
       >
-        View
+        View this site
       </Button>
     </CardContent>
   </Card>
