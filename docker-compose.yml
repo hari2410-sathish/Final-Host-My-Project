@@ -6,7 +6,7 @@ services:
     container_name: pahrikyns-postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: HariKrish123
       POSTGRES_DB: pahrikyns
     ports:
       - "5432:5432"
