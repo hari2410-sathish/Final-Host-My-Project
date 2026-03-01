@@ -1,8 +1,9 @@
 import { initializeApp } from "firebase/app";
-import { getMessaging } from "firebase/messaging";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-import { getAuth } from "firebase/auth";   // ✅ ADD THIS
+import { getAuth } from "firebase/auth";
+
+let messaging = null; // 👈 important
 
 const firebaseConfig = {
   apiKey: "AIzaSyAgFJse-e4UGejrX3ZYnSYoa3tFAL61eTY",
@@ -15,7 +16,19 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-export const auth = getAuth(app);        // ✅ THIS WAS MISSING
-export const messaging = getMessaging(app);
+export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+// ✅ SAFE messaging init
+if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+  import("firebase/messaging")
+    .then(({ getMessaging }) => {
+      messaging = getMessaging(app);
+    })
+    .catch(() => {
+      console.warn("Firebase messaging disabled (no HTTPS)");
+    });
+}
+
+export { messaging };
