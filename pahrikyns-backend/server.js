@@ -38,10 +38,15 @@ const app = express();
 const defaultAllowedOrigins = [
   "http://54.226.206.161",
   "https://54.226.206.161",
+
+  // 🔥 FRONTEND DOMAIN
+  "http://pahrikyns.duckdns.org",
+  "https://pahrikyns.duckdns.org",
+
+  // 🔥 LOCAL DEV
   "http://localhost:5173",
   "http://127.0.0.1:5173",
 ];
-
 function normalizeOrigin(origin) {
   try {
     const parsed = new URL(origin);
