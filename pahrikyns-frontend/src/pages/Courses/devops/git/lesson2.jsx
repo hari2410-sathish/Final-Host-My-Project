@@ -1,13 +1,12 @@
 import React from "react";
 import lang from "./lesson2.lang.json";
-import { useLanguage } from "../../../../contexts/LanguageContext";
+import { useLanguage } from "../../../../../contexts/LanguageContext";
 
-import GitInstall from "../../../../assets/git/git-install.png";
-import GitWindows from "../../../../assets/git/git-install-windows.png";
-import GitLinux from "../../../../assets/git/git-install-linux.png";
-import GitMac from "../../../../assets/git/git-install-mac.png";
-import GitVerify from "../../../../assets/git/git-version.png";
-
+import GitInstall from "../../../../../assets/git/git-install.png";
+import GitWindows from "../../../../../assets/git/git-install-windows.png";
+import GitLinux from "../../../../../assets/git/git-install-linux.png";
+import GitMac from "../../../../../assets/git/git-install-mac.png";
+import GitVerify from "../../../../../assets/git/git-version.png";
 export default function Lesson2() {
   const { langKey } = useLanguage();
   const data = lang[langKey] || lang.en;
