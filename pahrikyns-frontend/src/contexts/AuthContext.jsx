@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { getCurrentUser } from "../api/auth";
 import { registerFCMToken } from "../utils/fcm";
 import { signInAnonymously, signOut, onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/firebase";
+import { auth } from "../firebase";
 
 const AuthContext = createContext(null);
 const firebaseAuth = auth;
