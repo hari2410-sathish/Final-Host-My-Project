@@ -268,11 +268,6 @@ export default function App() {
       </Route>
 
 
-      <Route path="/admin" element={<AdminLayout />}>
-        {/* other admin routes */}
-
-        <Route path="orders/*" element={<AdminOrdersRoutes />} />
-      </Route>
       {/* ================= RESUME MODULE ================= */}
       <Route
         path="/resume"
