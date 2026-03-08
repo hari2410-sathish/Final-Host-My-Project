@@ -147,17 +147,6 @@ export default function App() {
           </ProtectedRoute>
         }
       />
-      {/* ✅ USER DASHBOARD */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <UserDashboard />
-          </ProtectedRoute>
-        }
-      />
-
-
       {/* USER AUTH */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
