@@ -127,7 +127,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000,
     },
@@ -194,8 +194,8 @@ io.use((socket, next) => {
   try {
     const token =
       socket.handshake.auth?.token ||
+      socket.handshake.query?.token ||
       socket.handshake.headers?.authorization?.split(" ")[1];
-
     if (!token) return next(new Error("Auth token missing"));
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
